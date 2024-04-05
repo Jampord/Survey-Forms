@@ -1,0 +1,36 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px 20px;
+  color: #000;
+  background-color: #9a9a9a;
+  border-radius: 5px;
+  margin-bottom: 1px;
+  box-shadow: 0 0 2px 0.3px;
+
+  /* position: sticky;
+  top: 0; */
+
+  &__date {
+    padding-left: 50px;
+  }
+}
+
+// .rolePage {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+
+//   &__header {
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+
+//     &__title {
+//     }
+//   }
+
+//   &__content {
+//   }
+// }

@@ -1,0 +1,43 @@
+.home-page-container {
+  display: flexbox;
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 150px;
+  background-color: #eeeeee;
+  height: 100vh;
+}
+
+header h1 {
+  font-size: 2em;
+}
+
+header p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.survey-description,
+.start-survey {
+  margin-bottom: 50px;
+}
+
+.start-button {
+  padding: 10px 20px;
+  background-color: dodgerblue;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.start-button:hover {
+  background-color: #007acc;
+}
+
+footer {
+  margin-top: 50px;
+  font-size: 0.8em;
+  color: #666;
+}
