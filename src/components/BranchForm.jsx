@@ -3,22 +3,39 @@ import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { branchesYup } from "../schema/Schema";
-import { useAddDepartmentMutation } from "../redux/api/departmentAPI";
 import { useAddBranchMutation } from "../redux/api/branchAPI";
+import { useDispatch, useSelector } from "react-redux";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 const BranchForm = () => {
   const [open, setOpen] = useState(false);
   const [addBranch, { isLoading }] = useAddBranchMutation();
+  const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
 
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+    reset();
   };
 
   const {
     handleSubmit,
+    reset,
     control,
     formState: { errors },
   } = useForm({
@@ -31,8 +48,14 @@ const BranchForm = () => {
     try {
       await addBranch(data).unwrap();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Branch Added Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -50,7 +73,7 @@ const BranchForm = () => {
     flexDirection: "column",
   };
   return (
-    <div>
+    <>
       <Button
         id="addButton"
         variant="contained"
@@ -65,21 +88,14 @@ const BranchForm = () => {
             Add Branch Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.branchName ? (
-              <Controller
-                name="branchName"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="branchName"
+              control={control}
+              defaultValue={branchesYup.defaultValues}
+              render={({ field }) =>
+                !errors.branchName ? (
                   <TextField {...field} label="Branch Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="branchName"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -87,24 +103,18 @@ const BranchForm = () => {
                     variant="filled"
                     helperText={errors.branchName.message}
                   />
-                )}
-              />
-            )}
-            {!errors.branchCode ? (
-              <Controller
-                name="branchCode"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
+                )
+              }
+            />
+
+            <Controller
+              name="branchCode"
+              control={control}
+              defaultValue={branchesYup.defaultValues}
+              render={({ field }) =>
+                !errors.branchCode ? (
                   <TextField {...field} label="Branch Code" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="branchCode"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -112,9 +122,9 @@ const BranchForm = () => {
                     variant="filled"
                     helperText={errors.branchCode.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
@@ -141,7 +151,23 @@ const BranchForm = () => {
           </form>
         </Box>
       </Modal>
-    </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

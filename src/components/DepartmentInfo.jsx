@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -24,6 +24,13 @@ import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { departmentsYup } from "../schema/Schema";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 export const DepartmentInfo = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +40,13 @@ export const DepartmentInfo = () => {
     (state) => state.selectedRow.selectedRow
   );
   const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
 
   //Table Pagination
   const [page, setPage] = useState(0);
@@ -59,6 +73,8 @@ export const DepartmentInfo = () => {
 
   // dept api
   const { data, isFetching } = useGetAllDepartmentsQuery({
+    PageNumber: page + 1,
+    PageSize: rowsPerPage,
     search: departmentSearch,
     status: departmentStatus,
   });
@@ -71,6 +87,7 @@ export const DepartmentInfo = () => {
     reset,
     control,
     formState: { errors },
+    setValue,
   } = useForm({
     resolver: yupResolver(departmentsYup.schema),
     mode: "onChange",
@@ -85,8 +102,14 @@ export const DepartmentInfo = () => {
       }).unwrap();
       reset();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Group Updated Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -104,6 +127,13 @@ export const DepartmentInfo = () => {
     flexDirection: "column",
   };
 
+  useEffect(() => {
+    if (open) {
+      setValue("departmentName", selectedDepartmentRow?.departmentName);
+      setValue("departmentNo", selectedDepartmentRow?.departmentNo);
+    }
+  }, [open, selectedDepartmentRow, setValue]);
+  console.log(selectedDepartmentRow);
   return (
     <>
       {isFetching ? (
@@ -183,25 +213,18 @@ export const DepartmentInfo = () => {
             Edit Department Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.departmentName ? (
-              <Controller
-                name="departmentName"
-                control={control}
-                defaultValue={departmentsYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="departmentName"
+              control={control}
+              defaultValue={departmentsYup.defaultValues}
+              render={({ field }) =>
+                !errors.departmentName ? (
                   <TextField
                     {...field}
                     label="Department Name"
                     variant="filled"
                   />
-                )}
-              />
-            ) : (
-              <Controller
-                name="departmentName"
-                control={control}
-                defaultValue={departmentsYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -209,9 +232,33 @@ export const DepartmentInfo = () => {
                     variant="filled"
                     helperText={errors.departmentName.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
+
+            <Controller
+              name="departmentNo"
+              control={control}
+              defaultValue={departmentsYup.defaultValues}
+              render={({ field }) =>
+                !errors.departmentName ? (
+                  <TextField
+                    {...field}
+                    label="Department No"
+                    variant="filled"
+                  />
+                ) : (
+                  <TextField
+                    {...field}
+                    error
+                    label="Department No"
+                    variant="filled"
+                    helperText={errors.departmentNo.message}
+                  />
+                )
+              }
+            />
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"
@@ -237,6 +284,22 @@ export const DepartmentInfo = () => {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

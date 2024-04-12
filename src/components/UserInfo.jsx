@@ -15,10 +15,18 @@ import {
   TableRow,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
-
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import {
   useArchiveUserMutation,
+  useGetAllRolesQuery,
   useGetAllUsersQuery,
   useUpdateUserMutation,
 } from "../redux/api/userAPI";
@@ -27,6 +35,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { usersYup } from "../schema/Schema";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
+import { useGetAllDepartmentsQuery } from "../redux/api/departmentAPI";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 export default function UserInfo() {
   const [open, setOpen] = useState(false);
@@ -34,11 +48,25 @@ export default function UserInfo() {
   const userStatus = useSelector((state) => state.user.status);
   const selectedUserRow = useSelector((state) => state.selectedRow.selectedRow);
   const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
+  const {
+    isOpen: isConfirmDialogOpen,
+    onOpen: onConfirmDialogOpen,
+    onClose: onConfirmDialogClose,
+  } = useDisclosure();
 
   console.log(selectedUserRow);
   //Table Pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const roleStatus = useSelector((state) => state.role.status);
+  const departmentStatus = useSelector((state) => state.department.status);
 
   const handlePageChange = (e, newPage) => {
     setPage(newPage);
@@ -65,6 +93,7 @@ export default function UserInfo() {
     control,
     formState: { errors },
     setValue,
+    watch,
   } = useForm({
     resolver: yupResolver(usersYup.schema),
     mode: "onChange",
@@ -72,13 +101,32 @@ export default function UserInfo() {
   });
 
   const onSubmit = async (data) => {
+    const transformData = {
+      ...data,
+      roleId: data.roleId.id,
+      departmentId: data.departmentId.id,
+    };
     try {
-      await updateUser({ Id: selectedUserRow?.id, body: data }).unwrap();
+      await updateUser({
+        Id: selectedUserRow?.id,
+        body: transformData,
+      }).unwrap();
       reset();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("User Updated Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
+  };
+
+  const onConfirm = () => {
+    archiveUser({ Id: selectedUserRow?.id });
+    onConfirmDialogClose();
   };
 
   // api
@@ -88,7 +136,11 @@ export default function UserInfo() {
     search: userSearch,
     status: userStatus,
   });
-  console.log(data);
+
+  const { data: roles } = useGetAllRolesQuery({ status: roleStatus });
+  const { data: departments } = useGetAllDepartmentsQuery({
+    status: departmentStatus,
+  });
   const [archiveUser] = useArchiveUserMutation();
   const [updateUser] = useUpdateUserMutation();
   // end of api
@@ -111,8 +163,25 @@ export default function UserInfo() {
     if (open) {
       setValue("fullName", selectedUserRow?.fullName);
       setValue("userName", selectedUserRow?.userName);
+      setValue(
+        "roleId",
+        roles?.rolesummary?.find((role) => role.id === selectedUserRow?.roleId)
+      );
+      setValue(
+        "departmentId",
+        departments?.deptsummary?.find(
+          (dept) => dept.id === selectedUserRow?.departmentId
+        )
+      );
     }
-  }, [open, selectedUserRow, setValue]);
+  }, [open, selectedUserRow, setValue, roles, departments]);
+
+  console.log(errors);
+  console.log(
+    roles?.rolesummary?.find((role) => role.id === selectedUserRow?.roleId)
+  );
+
+  console.log(watch());
 
   return (
     <>
@@ -134,7 +203,7 @@ export default function UserInfo() {
                       <strong>Full Name</strong>
                     </TableCell>
                     <TableCell>
-                      <strong>User Name</strong>
+                      <strong>Username</strong>
                     </TableCell>
                     <TableCell>
                       <strong>Department Name</strong>
@@ -173,7 +242,8 @@ export default function UserInfo() {
                               variant="contained"
                               size="small"
                               color={userStatus ? "error" : "warning"}
-                              onClick={() => archiveUser({ Id: user.id })}
+                              onClick={() => onConfirmDialogOpen()}
+                              // archiveUser({ Id: user.id })
                             >
                               {userStatus ? "Archive" : "Restore"}
                             </Button>
@@ -205,21 +275,14 @@ export default function UserInfo() {
             Edit User Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.fullName ? (
-              <Controller
-                name="fullName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="fullName"
+              control={control}
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) =>
+                !errors.fullName ? (
                   <TextField {...field} label="Full Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="fullName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -227,24 +290,18 @@ export default function UserInfo() {
                     variant="filled"
                     helperText={errors.fullName.message}
                   />
-                )}
-              />
-            )}
-            {!errors.userName ? (
-              <Controller
-                name="userName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
+                )
+              }
+            />
+
+            <Controller
+              name="userName"
+              control={control}
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) =>
+                !errors.userName ? (
                   <TextField {...field} label="User Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="userName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -252,10 +309,11 @@ export default function UserInfo() {
                     variant="filled"
                     helperText={errors.userName.message}
                   />
-                )}
-              />
-            )}
-            {!errors.roleName ? (
+                )
+              }
+            />
+
+            {/* {!errors.roleName ? (
               <Controller
                 name="roleName"
                 control={control}
@@ -279,7 +337,82 @@ export default function UserInfo() {
                   />
                 )}
               />
-            )}
+            )} */}
+
+            <Controller
+              control={control}
+              name="roleId"
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) => {
+                return (
+                  <Autocomplete
+                    {...field}
+                    disablePortal
+                    options={roles?.rolesummary}
+                    // value={options.id}
+                    getOptionLabel={(option) => option.roleName}
+                    renderInput={(params) =>
+                      !errors.roleId ? (
+                        <TextField
+                          {...params}
+                          label="Roles"
+                          helperText="Please select a role."
+                        />
+                      ) : (
+                        <TextField
+                          {...params}
+                          error
+                          label="Roles"
+                          helperText={errors.roleId.message}
+                        />
+                      )
+                    }
+                    onChange={(e, value) => field.onChange(value)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id && option.name === value.name
+                    }
+                  />
+                );
+              }}
+            />
+
+            <Controller
+              control={control}
+              name="departmentId"
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) => {
+                return (
+                  <Autocomplete
+                    {...field}
+                    disablePortal
+                    options={departments?.deptsummary}
+                    // value={options.id}
+                    getOptionLabel={(option) => option.departmentName}
+                    renderInput={(params) =>
+                      !errors.departmentId ? (
+                        <TextField
+                          {...params}
+                          label="Departments"
+                          helperText="Please select department."
+                        />
+                      ) : (
+                        <TextField
+                          {...params}
+                          error
+                          label="Departments"
+                          helperText={errors.departmentId.message}
+                        />
+                      )
+                    }
+                    onChange={(e, value) => field.onChange(value)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id && option.name === value.name
+                    }
+                  />
+                );
+              }}
+            />
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"
@@ -305,6 +438,66 @@ export default function UserInfo() {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
+      <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
+        <DialogTitle>
+          {userStatus ? "Archive user?" : "Restore User?"}
+        </DialogTitle>
+        <DialogContent>
+          {userStatus ? (
+            <DialogContentText>
+              Are you sure you want to archive this user?
+            </DialogContentText>
+          ) : (
+            <DialogContentText>
+              Are you sure you want to restore this user?
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onConfirm}
+            variant="contained"
+            autoFocus
+            color={userStatus ? "warning" : "primary"}
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              marginRight: 0,
+              fontSize: 12,
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={onConfirmDialogClose}
+            variant="outlined"
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              fontSize: 12,
+            }}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

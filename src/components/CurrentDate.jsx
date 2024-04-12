@@ -14,5 +14,14 @@ export default function CurrentDate() {
     };
   }, []);
 
-  return <h3 className="current-date">{date.toDateString()}</h3>;
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  }).format(date);
+
+  return <h3 className="current-date">{formattedDate}</h3>;
 }

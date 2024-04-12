@@ -11,13 +11,28 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { usersYup } from "../schema/Schema";
 import { useAddUserMutation, useGetAllRolesQuery } from "../redux/api/userAPI";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useGetAllDepartmentsQuery } from "../redux/api/departmentAPI";
+import useDisclosure from "../hooks/useDisclosure";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 export default function UserForm() {
   const [open, setOpen] = useState(false);
   const roleStatus = useSelector((state) => state.role.status);
   const departmentStatus = useSelector((state) => state.department.status);
+  const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
 
   const {
     handleSubmit,
@@ -33,14 +48,13 @@ export default function UserForm() {
   });
   console.log(watch("roleName"));
 
-  console.log("errors", errors);
-
   function handleOpen() {
     setOpen(true);
   }
 
   function handleClose() {
     setOpen(false);
+    reset();
   }
 
   // api
@@ -62,11 +76,6 @@ export default function UserForm() {
   // };
   // console.log(options, "options");
 
-  const getData = (data) => {
-    console.log(data.id);
-    console.log(data.name);
-  };
-
   const onSubmit = async (data) => {
     const transformData = {
       ...data,
@@ -79,10 +88,15 @@ export default function UserForm() {
 
       //use unwrap to catch error on RTK
       await addUser(transformData).unwrap();
-      reset();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("User Added Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -103,7 +117,7 @@ export default function UserForm() {
   };
 
   return (
-    <div>
+    <>
       <Button
         id="addButton"
         variant="contained"
@@ -300,7 +314,23 @@ export default function UserForm() {
           </form>
         </Box>
       </Modal>
-    </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
 

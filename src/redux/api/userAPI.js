@@ -18,6 +18,9 @@ const userAPI = api
           url: "User/AddUser",
           method: "POST",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["user"],
       }),
@@ -27,6 +30,9 @@ const userAPI = api
           url: `User/UpdateUser/${Id}`,
           method: "PUT",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["user"],
       }),

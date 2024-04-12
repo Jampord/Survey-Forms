@@ -18,6 +18,9 @@ const groupAPI = api
           url: `Group/AddGroup`,
           method: "POST",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["group"],
       }),
@@ -27,6 +30,9 @@ const groupAPI = api
           url: `Group/UpdateGroup/${Id}`,
           method: "PUT",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["group"],
       }),

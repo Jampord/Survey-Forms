@@ -18,6 +18,9 @@ const categoryAPI = api
           url: "Category/AddCategory",
           method: "POST",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["category"],
       }),
@@ -27,6 +30,9 @@ const categoryAPI = api
           url: `Category/UpdateCategory/${Id}`,
           method: "PUT",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["category"],
       }),

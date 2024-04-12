@@ -18,6 +18,9 @@ const departmentAPI = api
           url: "Department/AddNewDepartment",
           method: "POST",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["department"],
       }),
@@ -27,6 +30,9 @@ const departmentAPI = api
           url: `Department/UpdateDepartment/${Id}`,
           method: "PUT",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["department"],
       }),

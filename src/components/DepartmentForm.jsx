@@ -1,14 +1,29 @@
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import API from "../utils/API";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { departmentsYup } from "../schema/Schema";
 import { useAddDepartmentMutation } from "../redux/api/departmentAPI";
+import { useDispatch, useSelector } from "react-redux";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 export default function DepartmentForm() {
   const [open, setOpen] = useState(false);
   const [addDepartment, { isLoading }] = useAddDepartmentMutation(); //api
+  const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
 
   function handleOpen() {
     setOpen(true);
@@ -33,8 +48,14 @@ export default function DepartmentForm() {
     try {
       await addDepartment(data).unwrap(); //unwrap is important
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Department Added Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -55,7 +76,7 @@ export default function DepartmentForm() {
   };
 
   return (
-    <div>
+    <>
       <Button
         id="addButton"
         variant="contained"
@@ -100,6 +121,36 @@ export default function DepartmentForm() {
               />
             )}
 
+            {!errors.departmentNo ? (
+              <Controller
+                name="departmentNo"
+                control={control}
+                defaultValue={departmentsYup.defaultValues}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Department No."
+                    variant="filled"
+                  />
+                )}
+              />
+            ) : (
+              <Controller
+                name="departmentNo"
+                control={control}
+                defaultValue={departmentsYup.defaultValues}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    error
+                    label="Department No."
+                    variant="filled"
+                    helperText={errors.departmentNo.message}
+                  />
+                )}
+              />
+            )}
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"
@@ -125,6 +176,22 @@ export default function DepartmentForm() {
           </form>
         </Box>
       </Modal>
-    </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }

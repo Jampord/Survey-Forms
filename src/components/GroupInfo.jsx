@@ -18,12 +18,21 @@ import {
   TableRow,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import { Controller, useForm } from "react-hook-form";
 import { groupsYup } from "../schema/Schema";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useGetAllBranchesQuery } from "../redux/api/branchAPI";
+import { useDispatch, useSelector } from "react-redux";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 const GroupInfo = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +42,13 @@ const GroupInfo = () => {
     (state) => state.selectedRow.selectedRow
   );
   const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
 
   //Table Pagination
   const [page, setPage] = useState(0);
@@ -59,11 +75,15 @@ const GroupInfo = () => {
 
   //api
   const { data, isFetching } = useGetAllGroupsQuery({
+    PageNumber: page + 1,
+    PageSize: rowsPerPage,
     status: groupStatus,
     search: groupSearch,
   });
   const [archiveGroup] = useArchiveGroupMutation();
   const [updateGroup] = useUpdateGroupMutation();
+  const branchStatus = useSelector((state) => state.branch.status);
+  const { data: branches } = useGetAllBranchesQuery({ status: branchStatus });
   // end of api
 
   const {
@@ -79,15 +99,25 @@ const GroupInfo = () => {
   });
 
   const onSubmit = async (data) => {
+    const transformData = {
+      ...data,
+      branchId: data.branchId.id,
+    };
     try {
       await updateGroup({
         Id: selectedGroupRow?.id,
-        body: data,
+        body: transformData,
       }).unwrap();
       reset();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Group Updated Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -105,11 +135,19 @@ const GroupInfo = () => {
     flexDirection: "column",
   };
 
+  console.log(selectedGroupRow);
+
   useEffect(() => {
     if (open) {
       setValue("groupName", selectedGroupRow?.groupName);
+      setValue(
+        "branchId",
+        branches?.branchsummary?.find(
+          (branch) => branch.id === selectedGroupRow?.branchId
+        )
+      );
     }
-  }, [open, selectedGroupRow, setValue]);
+  }, [open, selectedGroupRow, setValue, branches]);
   return (
     <>
       {isFetching ? (
@@ -191,21 +229,14 @@ const GroupInfo = () => {
             Edit Group Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.groupName ? (
-              <Controller
-                name="groupName"
-                control={control}
-                defaultValue={groupsYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="groupName"
+              control={control}
+              defaultValue={groupsYup.defaultValues}
+              render={({ field }) =>
+                !errors.groupName ? (
                   <TextField {...field} label="Group Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="groupName"
-                control={control}
-                defaultValue={groupsYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -213,9 +244,47 @@ const GroupInfo = () => {
                     variant="filled"
                     helperText={errors.groupName.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
+
+            <Controller
+              control={control}
+              name="branchId"
+              defaultValue={groupsYup.defaultValues}
+              render={({ field }) => {
+                return (
+                  <Autocomplete
+                    {...field}
+                    disablePortal
+                    options={branches?.branchsummary}
+                    // value={options.id}
+                    getOptionLabel={(option) => option.branchName}
+                    renderInput={(params) =>
+                      !errors.branchId ? (
+                        <TextField
+                          {...params}
+                          label="Branches"
+                          helperText="Please select a branch."
+                        />
+                      ) : (
+                        <TextField
+                          {...params}
+                          error
+                          label="Branches"
+                          helperText={errors.branchId.message}
+                        />
+                      )
+                    }
+                    onChange={(e, value) => field.onChange(value)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id && option.name === value.name
+                    }
+                  />
+                );
+              }}
+            />
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"
@@ -241,6 +310,22 @@ const GroupInfo = () => {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

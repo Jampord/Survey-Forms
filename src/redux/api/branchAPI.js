@@ -18,6 +18,9 @@ const branchAPI = api
           url: "Branch/AddBranch",
           method: "POST",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["branch"],
       }),
@@ -27,6 +30,9 @@ const branchAPI = api
           url: `Branch/UpdateBranch/${Id}`,
           method: "PUT",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["branch"],
       }),

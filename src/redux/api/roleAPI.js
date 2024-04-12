@@ -18,6 +18,9 @@ const roleAPI = api
           url: "Role/AddNewRole",
           method: "POST",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["role"],
       }),
@@ -27,6 +30,9 @@ const roleAPI = api
           url: `Role/UpdateRole/${Id}`,
           method: "PUT",
           body,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["role"],
       }),

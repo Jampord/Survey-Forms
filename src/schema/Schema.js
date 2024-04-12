@@ -11,17 +11,19 @@ export const usersYup = {
       .required("Please enter username.")
       .min(2)
       .max(30, "Max characters exceeded."),
-    password: yup
-      .string()
-      .required("Password is required.")
-      .min(8, "Password must be at least 8 characters.")
-      .max(20, "Password must be at most 20 characters.")
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-      ),
+    // password: yup
+    //   .string()
+    //   .required("Password is required.")
+    //   .min(8, "Password must be at least 8 characters.")
+    //   .max(20, "Password must be at most 20 characters.")
+    //   .matches(
+    //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
+    //     "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+    //   ),
+
     roleId: yup.object().required("Please choose role."),
-    departmentId: yup.object().required("Please choose role."),
+
+    departmentId: yup.object().required("Please choose department."),
   }),
   defaultValues: {
     fullName: "",
@@ -48,8 +50,13 @@ export const departmentsYup = {
       .string()
       .required("Enter department name.")
       .max(30, "Max characters exceeded."),
+    departmentNo: yup
+      .number("Only numbers are accepted.")
+      .required("Enter department number.")
+      .max(99999, "Max number exceeded."),
   }),
-  defaultValues: { departmentName: "" },
+
+  defaultValues: { departmentName: "", departmentNo: "" },
 };
 
 export const branchesYup = {
@@ -72,8 +79,10 @@ export const groupsYup = {
       .string()
       .required("Enter group name.")
       .max(30, "Max characters exceeded."),
+
+    branchId: yup.object().required("Please choose branch."),
   }),
-  defaultValues: { groupName: "" },
+  defaultValues: { groupName: "", branchId: null },
 };
 
 export const categoriesYup = {

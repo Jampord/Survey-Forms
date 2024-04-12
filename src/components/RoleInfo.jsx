@@ -14,6 +14,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import {
   useGetAllRolesQuery,
   useArchiveRoleMutation,
@@ -24,6 +31,11 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rolesYup } from "../schema/Schema";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 export const RoleInfo = () => {
   // const [roleInfo, setRoleInfo] = useState([]);
@@ -32,9 +44,22 @@ export const RoleInfo = () => {
   const roleSearch = useSelector((state) => state.role.search);
   const roleStatus = useSelector((state) => state.role.status);
   const selectedRoleRow = useSelector((state) => state.selectedRow.selectedRow);
-  const [archiveRole] = useArchiveRoleMutation();
+  const [archiveRole, { error: dialogError }] = useArchiveRoleMutation();
   const [updateRole] = useUpdateRoleMutation();
   const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isConfirmDialogOpen,
+    onOpen: onConfirmDialogOpen,
+    onClose: onConfirmDialogClose,
+  } = useDisclosure();
 
   //Table Pagination
   const [page, setPage] = useState(0);
@@ -66,7 +91,6 @@ export const RoleInfo = () => {
     status: roleStatus,
     search: roleSearch,
   });
-  console.log(data);
 
   // useEffect(() => {
   //   const getAllRoles = async () => {
@@ -100,9 +124,20 @@ export const RoleInfo = () => {
       updateRole({ Id: selectedRoleRow?.id, body: data }).unwrap();
       reset();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("User Updated Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
+  };
+
+  const onConfirm = () => {
+    archiveRole({ Id: selectedRoleRow?.id });
+    onConfirmDialogClose();
   };
 
   const style = {
@@ -171,7 +206,7 @@ export const RoleInfo = () => {
                             variant="contained"
                             size="small"
                             color={roleStatus ? "error" : "warning"}
-                            onClick={() => archiveRole({ Id: role.id })}
+                            onClick={() => onConfirmDialogOpen()}
                           >
                             {roleStatus ? "Archive" : "Restore"}
                           </Button>
@@ -252,6 +287,66 @@ export const RoleInfo = () => {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
+      <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
+        <DialogTitle>
+          {roleStatus ? "Archive user?" : "Restore User?"}
+        </DialogTitle>
+        <DialogContent>
+          {roleStatus ? (
+            <DialogContentText>
+              Are you sure you want to archive this role?
+            </DialogContentText>
+          ) : (
+            <DialogContentText>
+              Are you sure you want to restore this role?
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onConfirm}
+            variant="contained"
+            autoFocus
+            color={roleStatus ? "warning" : "primary"}
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              marginRight: 0,
+              fontSize: 12,
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={onConfirmDialogClose}
+            variant="outlined"
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              fontSize: 12,
+            }}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

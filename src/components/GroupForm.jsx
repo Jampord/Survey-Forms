@@ -1,31 +1,70 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Modal,
+  TextField,
+  Typography,
+  Autocomplete,
+} from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAddGroupMutation } from "../redux/api/groupAPI";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { groupsYup } from "../schema/Schema";
+import { useGetAllBranchesQuery } from "../redux/api/branchAPI";
+import { useSelector, useDispatch } from "react-redux";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 const GroupForm = () => {
   const [addGroup] = useAddGroupMutation();
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+
   const handleClose = () => {
-    setOpen(false);
+    // setOpen(false);
+    onClose();
+    reset();
   };
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
+
+  const branchStatus = useSelector((state) => state.branch.status);
+  const { data: branches } = useGetAllBranchesQuery({ status: branchStatus });
+
   const onSubmit = async (data) => {
+    const transformData = {
+      ...data,
+      branchId: data.branchId.id,
+    };
     try {
-      await addGroup(data).unwrap(); //unwrap is important
+      await addGroup(transformData).unwrap(); //unwrap is important
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Group Added Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
   const {
     handleSubmit,
+    reset,
     control,
     formState: { errors },
   } = useForm({
@@ -53,12 +92,12 @@ const GroupForm = () => {
       <Button
         id="addButton"
         variant="contained"
-        onClick={handleOpen}
+        onClick={onOpen}
         sx={{ height: "25px", marginBottom: "5px" }}
       >
         Add
       </Button>
-      <Modal open={open}>
+      <Modal open={isOpen}>
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Add Group Form
@@ -90,6 +129,37 @@ const GroupForm = () => {
               />
             )}
 
+            <Controller
+              control={control}
+              name="branchId"
+              defaultValue={groupsYup.defaultValues}
+              render={({ field }) => {
+                return (
+                  <Autocomplete
+                    {...field}
+                    disablePortal
+                    options={branches?.branchsummary.map((option) => ({
+                      id: option.id,
+                      name: option.branchName,
+                    }))}
+                    // value={options.id}
+                    getOptionLabel={(option) => option.name}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Branches"
+                        helperText="Please select a branch."
+                      />
+                    )}
+                    onChange={(e, value) => field.onChange(value)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id && option.name === value.name
+                    }
+                  />
+                );
+              }}
+            />
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"
@@ -115,6 +185,22 @@ const GroupForm = () => {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
