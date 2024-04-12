@@ -32,7 +32,7 @@ import {
 } from "../redux/api/userAPI";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { usersYup } from "../schema/Schema";
+import { usersEditYup } from "../schema/Schema";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import { useGetAllDepartmentsQuery } from "../redux/api/departmentAPI";
@@ -95,9 +95,9 @@ export default function UserInfo() {
     setValue,
     watch,
   } = useForm({
-    resolver: yupResolver(usersYup.schema),
+    resolver: yupResolver(usersEditYup.schema),
     mode: "onChange",
-    defaultValues: usersYup.defaultValues,
+    defaultValues: usersEditYup.defaultValues,
   });
 
   const onSubmit = async (data) => {
@@ -278,7 +278,7 @@ export default function UserInfo() {
             <Controller
               name="fullName"
               control={control}
-              defaultValue={usersYup.defaultValues}
+              defaultValue={usersEditYup.defaultValues}
               render={({ field }) =>
                 !errors.fullName ? (
                   <TextField {...field} label="Full Name" variant="filled" />
@@ -297,7 +297,7 @@ export default function UserInfo() {
             <Controller
               name="userName"
               control={control}
-              defaultValue={usersYup.defaultValues}
+              defaultValue={usersEditYup.defaultValues}
               render={({ field }) =>
                 !errors.userName ? (
                   <TextField {...field} label="User Name" variant="filled" />
@@ -317,7 +317,7 @@ export default function UserInfo() {
               <Controller
                 name="roleName"
                 control={control}
-                defaultValue={usersYup.defaultValues}
+                defaultValue={userE.defaultValues}
                 render={({ field }) => (
                   <TextField {...field} label="Role Name" variant="filled" />
                 )}
@@ -326,7 +326,7 @@ export default function UserInfo() {
               <Controller
                 name="roleName"
                 control={control}
-                defaultValue={usersYup.defaultValues}
+                defaultValue={userE.defaultValues}
                 render={({ field }) => (
                   <TextField
                     {...field}
@@ -342,7 +342,7 @@ export default function UserInfo() {
             <Controller
               control={control}
               name="roleId"
-              defaultValue={usersYup.defaultValues}
+              defaultValue={usersEditYup.defaultValues}
               render={({ field }) => {
                 return (
                   <Autocomplete
@@ -379,7 +379,7 @@ export default function UserInfo() {
             <Controller
               control={control}
               name="departmentId"
-              defaultValue={usersYup.defaultValues}
+              defaultValue={usersEditYup.defaultValues}
               render={({ field }) => {
                 return (
                   <Autocomplete

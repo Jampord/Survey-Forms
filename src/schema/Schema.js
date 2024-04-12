@@ -11,6 +11,40 @@ export const usersYup = {
       .required("Please enter username.")
       .min(2)
       .max(30, "Max characters exceeded."),
+    password: yup
+      .string()
+      .required("Password is required.")
+      .min(8, "Password must be at least 8 characters.")
+      .max(20, "Password must be at most 20 characters.")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      ),
+
+    roleId: yup.object().required("Please choose role."),
+
+    departmentId: yup.object().required("Please choose department."),
+  }),
+  defaultValues: {
+    fullName: "",
+    userName: "",
+    password: "",
+    roleId: null,
+    departmentId: null,
+  },
+};
+
+export const usersEditYup = {
+  schema: yup.object({
+    fullName: yup
+      .string()
+      .required("Please enter full name.")
+      .max(50, "Max characters exceeded."),
+    userName: yup
+      .string()
+      .required("Please enter username.")
+      .min(2)
+      .max(30, "Max characters exceeded."),
     // password: yup
     //   .string()
     //   .required("Password is required.")
@@ -28,7 +62,6 @@ export const usersYup = {
   defaultValues: {
     fullName: "",
     userName: "",
-    password: "",
     roleId: null,
     departmentId: null,
   },
