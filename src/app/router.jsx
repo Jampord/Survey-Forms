@@ -9,7 +9,7 @@ import Group from "../pages/Group";
 import Category from "../pages/Category";
 
 export const router = createBrowserRouter([
-  { path: "", element: <HomePage /> },
+  { path: "/", element: <HomePage /> },
   { path: "login", element: <Login /> },
   { path: "user-account", element: <UserAccount /> },
   { path: "user-role", element: <UserRole /> },

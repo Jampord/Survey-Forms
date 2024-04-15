@@ -306,7 +306,7 @@ export const RoleInfo = () => {
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
-          {roleStatus ? "Archive user?" : "Restore User?"}
+          {roleStatus ? "Archive Role?" : "Restore Role?"}
         </DialogTitle>
         <DialogContent>
           {roleStatus ? (

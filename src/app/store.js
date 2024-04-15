@@ -8,6 +8,7 @@ import selectedRowSlice from "../redux/reducers/selectedRowSlice";
 import groupSlice from "../redux/reducers/groupSlice";
 import categorySlice from "../redux/reducers/categorySlice";
 import snackbarSlice from "../redux/reducers/snackbarSlice";
+import authSlice from "../features/auth/authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     selectedRow: selectedRowSlice,
     category: categorySlice,
     snackbar: snackbarSlice,
+    auth: authSlice,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>

@@ -1,4 +1,5 @@
 import CurrentDate from "./CurrentDate";
+import Logout from "./Logout";
 
 import "./NavBar.scss";
 import { Link } from "@mui/material";
@@ -15,8 +16,8 @@ export default function NavBar() {
         <Link href="branch">Branch</Link>
         <Link href="group">Group</Link>
         <Link href="category">Category</Link>
-        <Link href="login">Logout</Link>
       </div>
+      <Logout />
     </nav>
   );
 }

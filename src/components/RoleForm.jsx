@@ -76,21 +76,14 @@ export default function UserForm() {
             Add Role Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.roleName ? (
-              <Controller
-                name="roleName"
-                control={control}
-                defaultValue={rolesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="roleName"
+              control={control}
+              defaultValue={rolesYup.defaultValues}
+              render={({ field }) =>
+                !errors.roleName ? (
                   <TextField {...field} label="Role Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="roleName"
-                control={control}
-                defaultValue={rolesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -98,9 +91,9 @@ export default function UserForm() {
                     variant="filled"
                     helperText={errors.roleName.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button

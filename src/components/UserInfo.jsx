@@ -124,9 +124,25 @@ export default function UserInfo() {
     }
   };
 
-  const onConfirm = () => {
-    archiveUser({ Id: selectedUserRow?.id });
-    onConfirmDialogClose();
+  const onConfirm = async () => {
+    try {
+      await archiveUser({ Id: selectedUserRow?.id });
+      onConfirmDialogClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(
+        setSnackbarMessage(
+          userStatus
+            ? "User Archived Successfully!"
+            : "User Restored Successfully!"
+        )
+      );
+      onSnackbarOpen();
+    } catch (err) {
+      console.log(err);
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
+    }
   };
 
   // api
@@ -457,7 +473,7 @@ export default function UserInfo() {
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
-          {userStatus ? "Archive user?" : "Restore User?"}
+          {userStatus ? "Archive User?" : "Restore User?"}
         </DialogTitle>
         <DialogContent>
           {userStatus ? (

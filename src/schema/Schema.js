@@ -132,3 +132,11 @@ export const categoriesYup = {
   }),
   defaultValues: { categoryName: "", categoryPercentage: "" },
 };
+
+export const loginYup = {
+  schema: yup.object({
+    userName: yup.string().required("Enter username."),
+    password: yup.string().required("Enter password."),
+  }),
+  defaultValues: { userName: "", password: "" },
+};

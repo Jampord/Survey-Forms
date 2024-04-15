@@ -30,28 +30,29 @@
   padding-top: 30px;
 }
 
-.input {
+.login-input {
   display: flex;
   align-items: center;
   margin-bottom: 20px; /* Add space between inputs */
 }
 
-.input img {
+.login-input img {
   width: 30px; /* Adjust icon size if needed */
   margin-right: 10px; /* Add space between icon and input field */
 }
 
-.input input {
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+.login-input input {
+  // padding: 10px;
+  // border-radius: 10px;
+  // border: 1px solid #ccc;
   width: 250px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.input input[type="email"],
-.input input[type="password"] {
-  width: 250px; /* Set input field width */
+// .login-input input[type="text"],
+.login-input input[type="password"] {
+  width: 202px; /* Set input field width */
+  // background-color: alicebluepassword;
 }
 
 /* Styling for input fields */

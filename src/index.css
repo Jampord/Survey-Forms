@@ -20,3 +20,8 @@ code {
   padding-bottom: 10px;
   padding-top: 10px;
 }
+
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
