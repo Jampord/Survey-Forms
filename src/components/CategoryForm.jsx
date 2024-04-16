@@ -4,9 +4,25 @@ import { useAddCategoryMutation } from "../redux/api/categoryAPI";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { categoriesYup } from "../schema/Schema";
+import useDisclosure from "../hooks/useDisclosure";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const CategoryForm = () => {
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
 
   const handleOpen = () => {
     setOpen(true);
@@ -36,8 +52,14 @@ const CategoryForm = () => {
       await addCategory(data).unwrap();
       reset();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Category Added Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -71,25 +93,18 @@ const CategoryForm = () => {
             Add Category Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.categoryName ? (
-              <Controller
-                name="categoryName"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="categoryName"
+              control={control}
+              defaultValue={categoriesYup.defaultValues}
+              render={({ field }) =>
+                !errors.categoryName ? (
                   <TextField
                     {...field}
                     label="Category Name"
                     variant="filled"
                   />
-                )}
-              />
-            ) : (
-              <Controller
-                name="categoryName"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -97,29 +112,22 @@ const CategoryForm = () => {
                     variant="filled"
                     helperText={errors.categoryName.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
-            {!errors.categoryPercentage ? (
-              <Controller
-                name="categoryPercentage"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="categoryPercentage"
+              control={control}
+              defaultValue={categoriesYup.defaultValues}
+              render={({ field }) =>
+                !errors.categoryPercentage ? (
                   <TextField
                     {...field}
                     label="Category Percentage"
                     variant="filled"
                   />
-                )}
-              />
-            ) : (
-              <Controller
-                name="categoryPercentage"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -127,9 +135,28 @@ const CategoryForm = () => {
                     variant="filled"
                     helperText={errors.categoryPercentage.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
+
+            <Controller
+              name="limit"
+              control={control}
+              defaultValue={categoriesYup.defaultValues}
+              render={({ field }) =>
+                !errors.categoryPercentage ? (
+                  <TextField {...field} label="Score Limit" variant="filled" />
+                ) : (
+                  <TextField
+                    {...field}
+                    error
+                    label="Score Limit"
+                    variant="filled"
+                    helperText={errors.limit.message}
+                  />
+                )
+              }
+            />
 
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
@@ -157,6 +184,22 @@ const CategoryForm = () => {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

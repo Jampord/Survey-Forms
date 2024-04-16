@@ -1,5 +1,5 @@
 import "./Login.scss";
-import email_icon from "../assets/email-icon.png";
+import user_icon from "../assets/user-icon.png";
 import password_icon from "../assets/password-icon.png";
 import { useState } from "react";
 import { useUserLoginMutation } from "../redux/api/authAPI";
@@ -9,7 +9,7 @@ import { loginYup } from "../schema/Schema";
 import {
   Alert,
   IconButton,
-   InputAdornment,
+  InputAdornment,
   Snackbar,
   TextField,
 } from "@mui/material";
@@ -20,7 +20,13 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
-import { clearToken, setToken } from "../redux/reducers/authSlice";
+import {
+  clearToken,
+  setFullName,
+  setRoleName,
+  setToken,
+  setUserName,
+} from "../features/auth/authSlice";
 import { encryptToken } from "../features/tokenService";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
@@ -53,16 +59,14 @@ export default function Login() {
 
   const onSubmit = async (data) => {
     try {
-      await userLogin(data).unwrap();
-      reset();
-      const encryptedToken = encryptToken(data.token);
+      const res = await userLogin(data).unwrap();
+      const encryptedToken = encryptToken(res?.token);
       dispatch(setToken(encryptedToken));
       localStorage.setItem("encryptedToken", encryptedToken);
+      dispatch(setFullName(res?.fullName));
+
+      reset();
       navigate("/");
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Logged in successfully!"));
-      onSnackbarOpen();
-      console.log(encryptedToken);
     } catch (err) {
       console.log(err);
       dispatch(clearToken());
@@ -86,7 +90,7 @@ export default function Login() {
           <div className="underline"></div>
           <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
             <div className="login-input">
-              <img src={email_icon} alt="email icon" />
+              <img src={user_icon} alt="user icon" />
               <Controller
                 name="userName"
                 control={control}
@@ -98,6 +102,7 @@ export default function Login() {
                       label="Username"
                       variant="outlined"
                       type="text"
+                      fullWidth
                     />
                   ) : (
                     <TextField
@@ -106,6 +111,7 @@ export default function Login() {
                       label="Username"
                       variant="outlined"
                       helperText={errors.userName.message}
+                      fullWidth
                     />
                   )
                 }
@@ -126,6 +132,7 @@ export default function Login() {
                     variant="outlined"
                     helperText={errors?.password?.message}
                     error={!!errors?.password}
+                    fullWidth
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">

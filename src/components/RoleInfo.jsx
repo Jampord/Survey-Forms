@@ -125,7 +125,7 @@ export const RoleInfo = () => {
       reset();
       handleClose();
       dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("User Updated Successfully!"));
+      dispatch(setSnackbarMessage("Role Updated Successfully!"));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
@@ -136,8 +136,24 @@ export const RoleInfo = () => {
   };
 
   const onConfirm = () => {
-    archiveRole({ Id: selectedRoleRow?.id });
-    onConfirmDialogClose();
+    try {
+      archiveRole({ Id: selectedRoleRow?.id }).unwrap();
+      onConfirmDialogClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(
+        setSnackbarMessage(
+          roleStatus
+            ? "Role Archived Successfully!"
+            : "Role Restored Successfully!"
+        )
+      );
+      onSnackbarOpen();
+    } catch (err) {
+      console.log(err, "error");
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
+    }
   };
 
   const style = {
@@ -157,6 +173,7 @@ export const RoleInfo = () => {
   useEffect(() => {
     if (open) {
       setValue("roleName", selectedRoleRow?.roleName);
+      setValue("permission", selectedRoleRow?.permission);
     }
   }, [open, selectedRoleRow, setValue]);
 
@@ -179,6 +196,9 @@ export const RoleInfo = () => {
                     <strong>Role Name</strong>
                   </TableCell>
                   <TableCell>
+                    <strong>Permission</strong>
+                  </TableCell>
+                  <TableCell>
                     <strong>Actions</strong>
                   </TableCell>
                 </TableRow>
@@ -193,6 +213,7 @@ export const RoleInfo = () => {
                     >
                       <TableCell>{role.id}</TableCell>
                       <TableCell>{role.roleName}</TableCell>
+                      <TableCell>{role.permission}</TableCell>
                       <TableCell>
                         <Box sx={{ display: "flex", gap: "10px" }}>
                           <Button
@@ -237,21 +258,14 @@ export const RoleInfo = () => {
             Edit Role Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.roleName ? (
-              <Controller
-                name="roleName"
-                control={control}
-                defaultValue={rolesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="roleName"
+              control={control}
+              defaultValue={rolesYup.defaultValues}
+              render={({ field }) =>
+                !errors.roleName ? (
                   <TextField {...field} label="Role Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="roleName"
-                control={control}
-                defaultValue={rolesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
@@ -259,9 +273,29 @@ export const RoleInfo = () => {
                     variant="filled"
                     helperText={errors.roleName.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
+
+            {/* <Controller
+              name="permission"
+              control={control}
+              defaultValue={rolesYup.defaultValues}
+              render={({ field }) =>
+                !errors.permission ? (
+                  <TextField {...field} label="Permission" variant="filled" />
+                ) : (
+                  <TextField
+                    {...field}
+                    error
+                    label="Permission"
+                    variant="filled"
+                    helperText={errors.permission.message}
+                  />
+                )
+              }
+            /> */}
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"

@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { clearToken } from "../redux/reducers/authSlice";
+import { clearToken } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
 const Logout = () => {

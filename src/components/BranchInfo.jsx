@@ -19,6 +19,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -45,6 +50,11 @@ const BranchInfo = () => {
     isOpen: isSnackbarOpen,
     onOpen: onSnackbarOpen,
     onClose: onSnackbarClose,
+  } = useDisclosure();
+  const {
+    isOpen: isConfirmDialogOpen,
+    onOpen: onConfirmDialogOpen,
+    onClose: onConfirmDialogClose,
   } = useDisclosure();
 
   const [open, setOpen] = useState(false);
@@ -80,6 +90,27 @@ const BranchInfo = () => {
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
+    }
+  };
+
+  const onConfirm = async () => {
+    try {
+      await archiveBranch({ Id: selectedBranchRow?.id });
+      onConfirmDialogClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(
+        setSnackbarMessage(
+          branchStatus
+            ? "Branch Archived Successfully!"
+            : "Branch Restored Successfully!"
+        )
+      );
+      onSnackbarOpen();
+    } catch (err) {
+      console.log(err);
+      dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }
@@ -177,7 +208,7 @@ const BranchInfo = () => {
                             variant="contained"
                             size="small"
                             color={branchStatus ? "error" : "warning"}
-                            onClick={() => archiveBranch({ Id: branch.id })}
+                            onClick={() => onConfirmDialogOpen()}
                           >
                             {branchStatus ? "Archive" : "Restore"}
                           </Button>
@@ -300,6 +331,50 @@ const BranchInfo = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
+        <DialogTitle>
+          {branchStatus ? "Archive Branch?" : "Restore Branch?"}
+        </DialogTitle>
+        <DialogContent>
+          {branchStatus ? (
+            <DialogContentText>
+              Are you sure you want to archive this branch?
+            </DialogContentText>
+          ) : (
+            <DialogContentText>
+              Are you sure you want to restore this branch?
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onConfirm}
+            variant="contained"
+            autoFocus
+            color={branchStatus ? "warning" : "primary"}
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              marginRight: 0,
+              fontSize: 12,
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={onConfirmDialogClose}
+            variant="outlined"
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              fontSize: 12,
+            }}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

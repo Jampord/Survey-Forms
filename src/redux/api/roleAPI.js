@@ -42,6 +42,9 @@ const roleAPI = api
           url: `Role/SetIsActive/${Id}`,
           method: "PATCH",
           body: Id,
+          responseHandler: function (response) {
+            return response.text();
+          },
         }),
         invalidatesTags: ["role"],
       }),

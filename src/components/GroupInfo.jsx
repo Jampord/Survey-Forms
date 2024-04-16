@@ -20,6 +20,11 @@ import {
   Typography,
   Autocomplete,
 } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import { Controller, useForm } from "react-hook-form";
 import { groupsYup } from "../schema/Schema";
@@ -48,6 +53,11 @@ const GroupInfo = () => {
     isOpen: isSnackbarOpen,
     onOpen: onSnackbarOpen,
     onClose: onSnackbarClose,
+  } = useDisclosure();
+  const {
+    isOpen: isConfirmDialogOpen,
+    onOpen: onConfirmDialogOpen,
+    onClose: onConfirmDialogClose,
   } = useDisclosure();
 
   //Table Pagination
@@ -116,6 +126,27 @@ const GroupInfo = () => {
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
+    }
+  };
+
+  const onConfirm = async () => {
+    try {
+      await archiveGroup({ Id: selectedGroupRow?.id });
+      onConfirmDialogClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(
+        setSnackbarMessage(
+          groupStatus
+            ? "Group Archived Successfully!"
+            : "Group Restored Successfully!"
+        )
+      );
+      onSnackbarOpen();
+    } catch (err) {
+      console.log(err);
+      dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }
@@ -198,7 +229,7 @@ const GroupInfo = () => {
                             variant="contained"
                             size="small"
                             color={groupStatus ? "error" : "warning"}
-                            onClick={() => archiveGroup({ Id: group.id })}
+                            onClick={() => onConfirmDialogOpen()}
                           >
                             {groupStatus ? "Archive" : "Restore"}
                           </Button>
@@ -326,6 +357,50 @@ const GroupInfo = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
+        <DialogTitle>
+          {groupStatus ? "Archive Group?" : "Restore Group?"}
+        </DialogTitle>
+        <DialogContent>
+          {groupStatus ? (
+            <DialogContentText>
+              Are you sure you want to archive this group?
+            </DialogContentText>
+          ) : (
+            <DialogContentText>
+              Are you sure you want to restore this group?
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onConfirm}
+            variant="contained"
+            autoFocus
+            color={groupStatus ? "warning" : "primary"}
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              marginRight: 0,
+              fontSize: 12,
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={onConfirmDialogClose}
+            variant="outlined"
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              fontSize: 12,
+            }}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

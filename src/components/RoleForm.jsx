@@ -1,10 +1,17 @@
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import API from "../utils/API";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rolesYup } from "../schema/Schema";
 import { useAddRoleMutation } from "../redux/api/userAPI";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function UserForm() {
   const [open, setOpen] = useState(false);
@@ -15,6 +22,14 @@ export default function UserForm() {
   function handleClose() {
     setOpen(false);
   }
+  const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
 
   const {
     handleSubmit,
@@ -33,14 +48,24 @@ export default function UserForm() {
   const [addRole, { isLoading }] = useAddRoleMutation();
 
   const onSubmit = async (data) => {
+    const transformData = {
+      ...data,
+      permission: data.permission,
+    };
     try {
       // await API.post("Role/AddNewRole", data);
       // reset();
       // handleClose();
 
-      await addRole(data).unwrap();
+      await addRole(transformData).unwrap();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("User Updated Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -95,6 +120,25 @@ export default function UserForm() {
               }
             />
 
+            {/* <Controller
+              name="permission"
+              control={control}
+              defaultValue=""
+              render={({ field }) =>
+                !errors.permission ? (
+                  <TextField {...field} label="Permission" variant="filled" />
+                ) : (
+                  <TextField
+                    {...field}
+                    error
+                    label="Permission"
+                    variant="filled"
+                    helperText={errors.permission.message}
+                  />
+                )
+              }
+            /> */}
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"
@@ -120,6 +164,22 @@ export default function UserForm() {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

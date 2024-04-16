@@ -73,8 +73,12 @@ export const rolesYup = {
       .string()
       .required("Enter role name.")
       .max(15, "Max characters exceeded."),
+    permission: yup
+      .string()
+      .required("Enter permission.")
+      .max(30, "Max characters exceeded."),
   }),
-  defaultValues: { roleName: "" },
+  defaultValues: { roleName: "", permission: "" },
 };
 
 export const departmentsYup = {
@@ -84,7 +88,7 @@ export const departmentsYup = {
       .required("Enter department name.")
       .max(30, "Max characters exceeded."),
     departmentNo: yup
-      .number("Only numbers are accepted.")
+      .string()
       .required("Enter department number.")
       .max(99999, "Max number exceeded."),
   }),
@@ -126,11 +130,18 @@ export const categoriesYup = {
       .max(30, "Max characters exceeded."),
 
     categoryPercentage: yup
-      .number("Only input numbers")
+      .number()
       .required("Enter category percentage")
-      .max(100, "Max input exceeded."),
+      .max(100, "Max input exceeded.")
+      .min(1, "Input should be greater than 0"),
+
+    limit: yup
+      .number()
+      .required("Enter score limit.")
+      .max(100, "Score limit is 100")
+      .min(1, "Score limit should be greater than 0"),
   }),
-  defaultValues: { categoryName: "", categoryPercentage: "" },
+  defaultValues: { categoryName: "", categoryPercentage: "", limit: 1 },
 };
 
 export const loginYup = {

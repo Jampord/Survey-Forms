@@ -14,6 +14,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import {
   useArchiveDepartmentMutation,
   useGetAllDepartmentsQuery,
@@ -24,8 +31,6 @@ import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { departmentsYup } from "../schema/Schema";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import useDisclosure from "../hooks/useDisclosure";
 import {
   setSnackbarMessage,
@@ -46,6 +51,11 @@ export const DepartmentInfo = () => {
     isOpen: isSnackbarOpen,
     onOpen: onSnackbarOpen,
     onClose: onSnackbarClose,
+  } = useDisclosure();
+  const {
+    isOpen: isConfirmDialogOpen,
+    onOpen: onConfirmDialogOpen,
+    onClose: onConfirmDialogClose,
   } = useDisclosure();
 
   //Table Pagination
@@ -95,19 +105,44 @@ export const DepartmentInfo = () => {
   });
 
   const onSubmit = async (data) => {
+    const transformData = {
+      ...data,
+      departmentNo: data.departmentNo,
+    };
     try {
       await updateDepartment({
         Id: selectedDepartmentRow?.id,
-        body: data,
+        body: transformData,
       }).unwrap();
       reset();
       handleClose();
       dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Group Updated Successfully!"));
+      dispatch(setSnackbarMessage("Department Updated Successfully!"));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
+    }
+  };
+
+  const onConfirm = async () => {
+    try {
+      await archiveDepartment({ Id: selectedDepartmentRow?.id });
+      onConfirmDialogClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(
+        setSnackbarMessage(
+          departmentStatus
+            ? "User Archived Successfully!"
+            : "User Restored Successfully!"
+        )
+      );
+      onSnackbarOpen();
+    } catch (err) {
+      console.log(err);
+      dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }
@@ -133,7 +168,7 @@ export const DepartmentInfo = () => {
       setValue("departmentNo", selectedDepartmentRow?.departmentNo);
     }
   }, [open, selectedDepartmentRow, setValue]);
-  console.log(selectedDepartmentRow);
+
   return (
     <>
       {isFetching ? (
@@ -153,6 +188,9 @@ export const DepartmentInfo = () => {
                     <strong>Department Name</strong>
                   </TableCell>
                   <TableCell>
+                    <strong>Department No</strong>
+                  </TableCell>
+                  <TableCell>
                     <strong>Actions</strong>
                   </TableCell>
                 </TableRow>
@@ -167,6 +205,7 @@ export const DepartmentInfo = () => {
                     >
                       <TableCell>{department.id}</TableCell>
                       <TableCell>{department.departmentName}</TableCell>
+                      <TableCell>{department.departmentNo}</TableCell>
                       <TableCell>
                         <Box sx={{ display: "flex", gap: "10px" }}>
                           <Button
@@ -180,9 +219,7 @@ export const DepartmentInfo = () => {
                             variant="contained"
                             size="small"
                             color={departmentStatus ? "error" : "warning"}
-                            onClick={() =>
-                              archiveDepartment({ Id: department.id })
-                            }
+                            onClick={() => onConfirmDialogOpen()}
                           >
                             {departmentStatus ? "Archive" : "Restore"}
                           </Button>
@@ -223,6 +260,7 @@ export const DepartmentInfo = () => {
                     {...field}
                     label="Department Name"
                     variant="filled"
+                    fullWidth
                   />
                 ) : (
                   <TextField
@@ -231,6 +269,7 @@ export const DepartmentInfo = () => {
                     label="Department Name"
                     variant="filled"
                     helperText={errors.departmentName.message}
+                    fullWidth
                   />
                 )
               }
@@ -241,19 +280,23 @@ export const DepartmentInfo = () => {
               control={control}
               defaultValue={departmentsYup.defaultValues}
               render={({ field }) =>
-                !errors.departmentName ? (
+                !errors.departmentNo ? (
                   <TextField
                     {...field}
+                    type="number"
                     label="Department No"
                     variant="filled"
+                    fullWidth
                   />
                 ) : (
                   <TextField
                     {...field}
+                    type="number"
                     error
                     label="Department No"
                     variant="filled"
                     helperText={errors.departmentNo.message}
+                    fullWidth
                   />
                 )
               }
@@ -300,6 +343,50 @@ export const DepartmentInfo = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
+        <DialogTitle>
+          {departmentStatus ? "Archive Department?" : "Restore Department?"}
+        </DialogTitle>
+        <DialogContent>
+          {departmentStatus ? (
+            <DialogContentText>
+              Are you sure you want to archive this department?
+            </DialogContentText>
+          ) : (
+            <DialogContentText>
+              Are you sure you want to restore this department?
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onConfirm}
+            variant="contained"
+            autoFocus
+            color={departmentStatus ? "warning" : "primary"}
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              marginRight: 0,
+              fontSize: 12,
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={onConfirmDialogClose}
+            variant="outlined"
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              fontSize: 12,
+            }}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

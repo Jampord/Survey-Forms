@@ -91,65 +91,55 @@ export default function DepartmentForm() {
             Add Department Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.departmentName ? (
-              <Controller
-                name="departmentName"
-                control={control}
-                defaultValue={departmentsYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="departmentName"
+              control={control}
+              defaultValue={departmentsYup.defaultValues}
+              render={({ field }) =>
+                !errors.departmentName ? (
                   <TextField
                     {...field}
                     label="Department Name"
                     variant="filled"
+                    fullWidth
                   />
-                )}
-              />
-            ) : (
-              <Controller
-                name="departmentName"
-                control={control}
-                defaultValue={departmentsYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Department Name"
                     variant="filled"
                     helperText={errors.departmentName.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
-            {!errors.departmentNo ? (
-              <Controller
-                name="departmentNo"
-                control={control}
-                defaultValue={departmentsYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="departmentNo"
+              control={control}
+              defaultValue={departmentsYup.defaultValues}
+              render={({ field }) =>
+                !errors.departmentNo ? (
                   <TextField
                     {...field}
                     label="Department No."
                     variant="filled"
+                    fullWidth
                   />
-                )}
-              />
-            ) : (
-              <Controller
-                name="departmentNo"
-                control={control}
-                defaultValue={departmentsYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Department No."
                     variant="filled"
                     helperText={errors.departmentNo.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button

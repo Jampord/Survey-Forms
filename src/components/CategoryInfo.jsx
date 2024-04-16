@@ -19,11 +19,23 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { categoriesYup } from "../schema/Schema";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
+import useDisclosure from "../hooks/useDisclosure";
+import {
+  setSnackbarMessage,
+  setSnackbarSeverity,
+} from "../redux/reducers/snackbarSlice";
 
 const CategoryInfo = () => {
   const [open, setOpen] = useState(false);
@@ -33,6 +45,18 @@ const CategoryInfo = () => {
     (state) => state.selectedRow.selectedRow
   );
   const dispatch = useDispatch();
+  const snackbarMessage = useSelector((state) => state.snackbar.message);
+  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
+  const {
+    isOpen: isSnackbarOpen,
+    onOpen: onSnackbarOpen,
+    onClose: onSnackbarClose,
+  } = useDisclosure();
+  const {
+    isOpen: isConfirmDialogOpen,
+    onOpen: onConfirmDialogOpen,
+    onClose: onConfirmDialogClose,
+  } = useDisclosure();
 
   //Table Pagination
   const [page, setPage] = useState(0);
@@ -64,8 +88,35 @@ const CategoryInfo = () => {
       }).unwrap();
       reset();
       handleClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Category Updated Successfully!"));
+      onSnackbarOpen();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
+    }
+  };
+
+  const onConfirm = async () => {
+    try {
+      await archiveCategory({ Id: selectedCategoryRow?.id });
+      onConfirmDialogClose();
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(
+        setSnackbarMessage(
+          categoryStatus
+            ? "Category Archived Successfully!"
+            : "Category Restored Successfully!"
+        )
+      );
+      onSnackbarOpen();
+    } catch (err) {
+      console.log(err);
+      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
     }
   };
 
@@ -110,6 +161,7 @@ const CategoryInfo = () => {
     if (open) {
       setValue("categoryName", selectedCategoryRow?.categoryName);
       setValue("categoryPercentage", selectedCategoryRow?.categoryPercentage);
+      setValue("limit", selectedCategoryRow?.limit);
     }
   }, [open, setValue, selectedCategoryRow]);
 
@@ -136,6 +188,9 @@ const CategoryInfo = () => {
                       <strong>Category Percentage</strong>
                     </TableCell>
                     <TableCell>
+                      <strong>Score Limit</strong>
+                    </TableCell>
+                    <TableCell>
                       <strong>Actions</strong>
                     </TableCell>
                   </TableRow>
@@ -150,7 +205,9 @@ const CategoryInfo = () => {
                       >
                         <TableCell>{category.id}</TableCell>
                         <TableCell>{category.categoryName}</TableCell>
-                        <TableCell>{category.categoryPercentage}</TableCell>
+                        <TableCell>{category.categoryPercentage}%</TableCell>
+                        <TableCell>{category.limit}</TableCell>
+
                         <TableCell>
                           <Box sx={{ display: "flex", gap: "10px" }}>
                             <Button
@@ -228,35 +285,59 @@ const CategoryInfo = () => {
               />
             )}
 
-            {!errors.categoryPercentage ? (
-              <Controller
-                name="categoryPercentage"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="categoryPercentage"
+              control={control}
+              defaultValue={categoriesYup.defaultValues}
+              render={({ field }) =>
+                !errors.categoryPercentage ? (
                   <TextField
                     {...field}
+                    autoComplete="false"
                     label="Category Percentage"
                     variant="filled"
+                    type="number"
                   />
-                )}
-              />
-            ) : (
-              <Controller
-                name="categoryPercentage"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
+                    autoComplete="false"
                     error
                     label="Category Percentage"
                     variant="filled"
+                    type="number"
                     helperText={errors.categoryPercentage.message}
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
+
+            <Controller
+              name="limit"
+              control={control}
+              defaultValue={categoriesYup.defaultValues}
+              render={({ field }) =>
+                !errors.categoryPercentage ? (
+                  <TextField
+                    {...field}
+                    autoComplete="false"
+                    label="Score Limit"
+                    variant="filled"
+                    type="number"
+                  />
+                ) : (
+                  <TextField
+                    {...field}
+                    autoComplete="false"
+                    error
+                    label="Category Percentage"
+                    variant="filled"
+                    type="number"
+                    helperText={errors.limit.message}
+                  />
+                )
+              }
+            />
 
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
@@ -282,6 +363,66 @@ const CategoryInfo = () => {
           </form>
         </Box>
       </Modal>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isSnackbarOpen}
+        autoHideDuration={3000}
+        onClose={onSnackbarClose}
+      >
+        <Alert
+          onClose={onSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
+      <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
+        <DialogTitle>
+          {categoryStatus ? "Archive Category?" : "Restore Category?"}
+        </DialogTitle>
+        <DialogContent>
+          {categoryStatus ? (
+            <DialogContentText>
+              Are you sure you want to archive this category?
+            </DialogContentText>
+          ) : (
+            <DialogContentText>
+              Are you sure you want to restore this category?
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onConfirm}
+            variant="contained"
+            autoFocus
+            color={categoryStatus ? "warning" : "primary"}
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              marginRight: 0,
+              fontSize: 12,
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={onConfirmDialogClose}
+            variant="outlined"
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              fontSize: 12,
+            }}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

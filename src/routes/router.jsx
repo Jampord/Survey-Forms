@@ -7,10 +7,19 @@ import Department from "../pages/Department";
 import Branch from "../pages/Branch";
 import Group from "../pages/Group";
 import Category from "../pages/Category";
+import PageNotFound from "../pages/PageNotFound";
+import ProtectedRoutes from "./ProtectedRoutes";
+// import AccessDenied from "../pages/AccessDenied";
 
 export const router = createBrowserRouter([
-  { path: "/", element: <HomePage /> },
   { path: "login", element: <Login /> },
+  { path: "*", element: <PageNotFound /> },
+  {
+    path: "/",
+    element: <HomePage />,
+    children: [],
+  },
+  { path: "", element: <HomePage /> },
   { path: "user-account", element: <UserAccount /> },
   { path: "user-role", element: <UserRole /> },
   { path: "department", element: <Department /> },
