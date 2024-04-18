@@ -15,3 +15,11 @@ export const api = createApi({
   }),
   endpoints: () => ({}),
 });
+
+export const userAPI = createApi({
+  reducerPath: "userAPI",
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://dummyjson.com/",
+  }),
+  endpoints: () => ({}),
+});

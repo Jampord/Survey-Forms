@@ -9,13 +9,18 @@
   margin-bottom: 1px;
   box-shadow: 0 0 2px 0.3px;
 
-  /* position: sticky;
-  top: 0; */
-
   &__date {
     padding-left: 50px;
     gap: 12px;
     padding: 8px;
+  }
+
+  &__items {
+    display: flex;
+
+    .spacer {
+      margin-right: 10px;
+    }
   }
 }
 

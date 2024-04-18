@@ -36,6 +36,7 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
+import { useGetAllDummyUsersQuery } from "../redux/api/dummyDepartmentAPI";
 
 export const DepartmentInfo = () => {
   const [open, setOpen] = useState(false);
@@ -90,6 +91,8 @@ export const DepartmentInfo = () => {
   });
   const [archiveDepartment] = useArchiveDepartmentMutation();
   const [updateDepartment] = useUpdateDepartmentMutation();
+  const { data: dummyUsers } = useGetAllDummyUsersQuery();
+  console.log(dummyUsers);
   //end of dept api
 
   const {

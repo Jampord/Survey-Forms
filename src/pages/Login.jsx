@@ -29,6 +29,7 @@ import {
 } from "../features/auth/authSlice";
 import { encryptToken } from "../features/tokenService";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { setPermissions } from "../redux/reducers/permissionsSlice";
 
 export default function Login() {
   // const [username, setUsername] = useState("");
@@ -62,15 +63,13 @@ export default function Login() {
       const res = await userLogin(data).unwrap();
       const encryptedToken = encryptToken(res?.token);
       dispatch(setToken(encryptedToken));
-      localStorage.setItem("encryptedToken", encryptedToken);
       dispatch(setFullName(res?.fullName));
+      dispatch(setPermissions(res?.permission));
 
       reset();
       navigate("/");
     } catch (err) {
       console.log(err);
-      dispatch(clearToken());
-      localStorage.removeItem("encryptedToken");
       dispatch(setSnackbarSeverity("error"));
       dispatch(setSnackbarMessage(err.message));
       onSnackbarOpen();

@@ -73,12 +73,9 @@ export const rolesYup = {
       .string()
       .required("Enter role name.")
       .max(15, "Max characters exceeded."),
-    permission: yup
-      .string()
-      .required("Enter permission.")
-      .max(30, "Max characters exceeded."),
+    permission: yup.array(),
   }),
-  defaultValues: { roleName: "", permission: "" },
+  defaultValues: { roleName: "", permission: [""] },
 };
 
 export const departmentsYup = {
@@ -88,7 +85,8 @@ export const departmentsYup = {
       .required("Enter department name.")
       .max(30, "Max characters exceeded."),
     departmentNo: yup
-      .string()
+      .number()
+      .typeError("Enter department no.")
       .required("Enter department number.")
       .max(99999, "Max number exceeded."),
   }),
@@ -131,6 +129,7 @@ export const categoriesYup = {
 
     categoryPercentage: yup
       .number()
+      .typeError("Enter category percentage")
       .required("Enter category percentage")
       .max(100, "Max input exceeded.")
       .min(1, "Input should be greater than 0"),

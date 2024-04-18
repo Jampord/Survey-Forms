@@ -255,35 +255,30 @@ const CategoryInfo = () => {
             Edit User Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.categoryName ? (
-              <Controller
-                name="categoryName"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="categoryName"
+              control={control}
+              defaultValue={categoriesYup.defaultValues}
+              render={({ field }) =>
+                !errors.categoryName ? (
                   <TextField
                     {...field}
                     label="Category Name"
                     variant="filled"
+                    fullWidth
                   />
-                )}
-              />
-            ) : (
-              <Controller
-                name="categoryName"
-                control={control}
-                defaultValue={categoriesYup.defaultValues}
-                render={({ field }) => (
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Category Name"
                     variant="filled"
                     helperText={errors.categoryName.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
             <Controller
               name="categoryPercentage"
@@ -297,6 +292,7 @@ const CategoryInfo = () => {
                     label="Category Percentage"
                     variant="filled"
                     type="number"
+                    fullWidth
                   />
                 ) : (
                   <TextField
@@ -307,6 +303,7 @@ const CategoryInfo = () => {
                     variant="filled"
                     type="number"
                     helperText={errors.categoryPercentage.message}
+                    fullWidth
                   />
                 )
               }
@@ -317,13 +314,14 @@ const CategoryInfo = () => {
               control={control}
               defaultValue={categoriesYup.defaultValues}
               render={({ field }) =>
-                !errors.categoryPercentage ? (
+                !errors.limit ? (
                   <TextField
                     {...field}
                     autoComplete="false"
                     label="Score Limit"
                     variant="filled"
                     type="number"
+                    fullWidth
                   />
                 ) : (
                   <TextField
@@ -334,6 +332,7 @@ const CategoryInfo = () => {
                     variant="filled"
                     type="number"
                     helperText={errors.limit.message}
+                    fullWidth
                   />
                 )
               }

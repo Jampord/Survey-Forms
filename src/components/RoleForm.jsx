@@ -1,9 +1,17 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Modal,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rolesYup } from "../schema/Schema";
-import { useAddRoleMutation } from "../redux/api/userAPI";
+import { useAddRoleMutation, useGetAllRolesQuery } from "../redux/api/userAPI";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import useDisclosure from "../hooks/useDisclosure";
@@ -12,6 +20,7 @@ import {
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { navigationData } from "../routes/NavigationData";
 
 export default function UserForm() {
   const [open, setOpen] = useState(false);
@@ -20,6 +29,7 @@ export default function UserForm() {
   }
 
   function handleClose() {
+    reset();
     setOpen(false);
   }
   const dispatch = useDispatch();
@@ -30,27 +40,28 @@ export default function UserForm() {
     onOpen: onSnackbarOpen,
     onClose: onSnackbarClose,
   } = useDisclosure();
+  // const roleStatus = useSelector((state) => state.role.status);
+
+  // const { roles } = useGetAllRolesQuery({ status: roleStatus });
 
   const {
     handleSubmit,
     reset,
     watch,
     control,
-    formState: { errors, isValid },
+    formState: { errors },
+    getValues,
   } = useForm({
     resolver: yupResolver(rolesYup.schema),
     mode: "onChange",
     defaultValues: rolesYup.defaultValues,
   });
 
-  console.log(watch());
-
   const [addRole, { isLoading }] = useAddRoleMutation();
 
   const onSubmit = async (data) => {
     const transformData = {
       ...data,
-      permission: data.permission,
     };
     try {
       // await API.post("Role/AddNewRole", data);
@@ -69,8 +80,6 @@ export default function UserForm() {
     }
   };
 
-  console.log(errors);
-
   const style = {
     position: "absolute",
     top: "50%",
@@ -84,6 +93,9 @@ export default function UserForm() {
     display: "flex",
     flexDirection: "column",
   };
+
+  console.log(navigationData);
+  console.log(watch());
 
   return (
     <div>
@@ -107,7 +119,12 @@ export default function UserForm() {
               defaultValue={rolesYup.defaultValues}
               render={({ field }) =>
                 !errors.roleName ? (
-                  <TextField {...field} label="Role Name" variant="filled" />
+                  <TextField
+                    {...field}
+                    label="Role Name"
+                    variant="filled"
+                    fullWidth
+                  />
                 ) : (
                   <TextField
                     {...field}
@@ -115,10 +132,43 @@ export default function UserForm() {
                     label="Role Name"
                     variant="filled"
                     helperText={errors.roleName.message}
+                    fullWidth
                   />
                 )
               }
             />
+
+            {/* <Controller
+              name="permission"
+              control={control}
+              render={({ field }) => {
+                navigationData.map((item) => {
+                  return (
+                    <FormControlLabel
+                      control={
+                        <Checkbox {...field} key={item.id} label={item.name} />
+                      }
+                      label={item.name}
+                    />
+                  );
+                });
+              }}
+            /> */}
+
+            {navigationData.map((item) => (
+              <Controller
+                key={item.id}
+                name={`permission[${item.id - 1}]`}
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={<Checkbox {...field} />}
+                    label={item.name}
+                  />
+                )}
+              />
+            ))}
 
             {/* <Controller
               name="permission"
@@ -138,7 +188,6 @@ export default function UserForm() {
                 )
               }
             /> */}
-
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"

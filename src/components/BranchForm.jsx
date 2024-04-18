@@ -94,7 +94,12 @@ const BranchForm = () => {
               defaultValue={branchesYup.defaultValues}
               render={({ field }) =>
                 !errors.branchName ? (
-                  <TextField {...field} label="Branch Name" variant="filled" />
+                  <TextField
+                    {...field}
+                    label="Branch Name"
+                    variant="filled"
+                    fullWidth
+                  />
                 ) : (
                   <TextField
                     {...field}
@@ -102,6 +107,7 @@ const BranchForm = () => {
                     label="Branch Name"
                     variant="filled"
                     helperText={errors.branchName.message}
+                    fullWidth
                   />
                 )
               }
@@ -113,7 +119,12 @@ const BranchForm = () => {
               defaultValue={branchesYup.defaultValues}
               render={({ field }) =>
                 !errors.branchCode ? (
-                  <TextField {...field} label="Branch Code" variant="filled" />
+                  <TextField
+                    {...field}
+                    label="Branch Code"
+                    variant="filled"
+                    fullWidth
+                  />
                 ) : (
                   <TextField
                     {...field}
@@ -121,6 +132,7 @@ const BranchForm = () => {
                     label="Branch Code"
                     variant="filled"
                     helperText={errors.branchCode.message}
+                    fullWidth
                   />
                 )
               }

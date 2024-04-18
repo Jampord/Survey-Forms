@@ -1,15 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { decryptToken } from "../tokenService";
+
+const storedToken = decryptToken(localStorage.getItem("encryptedToken"));
+const storedFullname = localStorage.getItem("fullName");
 
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
-    fullName: "",
-    userName: "",
-    roleName: "",
-    token: "",
+    fullName: storedFullname || "",
+    token: storedToken || "",
   },
   reducers: {
     setToken: (state, action) => {
+      localStorage.setItem("encryptedToken", action.payload);
       state.token = action.payload;
     },
     clearToken: (state, action) => {
@@ -21,7 +24,6 @@ export const authSlice = createSlice({
     },
     setRoleName: (state, action) => {
       state.roleName = action.payload;
-      localStorage.setItem("roleName", action.payload);
     },
     setUserName: (state, action) => {
       state.userName = action.payload;

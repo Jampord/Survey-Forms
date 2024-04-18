@@ -4,7 +4,7 @@ const secretKey =
   "parangtangakausapangtalaatbuwannaghihintayngmeronsagitnangkawalan";
 
 export const encryptToken = (token) => {
-  return CryptoJS.AES.encrypt(token, secretKey).toString();
+  return CryptoJS.AES.encrypt(JSON.stringify(token), secretKey).toString();
 };
 
 export const decryptToken = (encryptedToken) => {

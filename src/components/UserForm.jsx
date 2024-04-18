@@ -132,83 +132,80 @@ export default function UserForm() {
             Add User Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.fullName ? (
-              <Controller
-                name="fullName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
-                  <TextField {...field} label="Full Name" variant="standard" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="fullName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="fullName"
+              control={control}
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) =>
+                !errors.fullName ? (
+                  <TextField
+                    {...field}
+                    label="Full Name"
+                    variant="standard"
+                    fullWidth
+                  />
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Full Name"
                     variant="standard"
                     helperText={errors.fullName.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
-            {!errors.userName ? (
-              <Controller
-                name="userName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
-                  <TextField {...field} label="User Name" variant="standard" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="userName"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="userName"
+              control={control}
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) =>
+                !errors.userName ? (
+                  <TextField
+                    {...field}
+                    label="User Name"
+                    variant="standard"
+                    fullWidth
+                  />
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="User Name"
                     variant="standard"
                     helperText={errors.userName.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
-            {!errors.password ? (
-              <Controller
-                name="password"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
-                  <TextField {...field} label="Password" variant="standard" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="password"
-                control={control}
-                defaultValue={usersYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="password"
+              control={control}
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) =>
+                !errors.password ? (
+                  <TextField
+                    {...field}
+                    label="Password"
+                    variant="standard"
+                    fullWidth
+                  />
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Password"
                     variant="standard"
                     helperText={errors.password.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
             <Controller
               control={control}
@@ -218,6 +215,7 @@ export default function UserForm() {
                 return (
                   <Autocomplete
                     {...field}
+                    fullWidth
                     disablePortal
                     options={roles?.rolesummary.map((option) => ({
                       id: option.id,
@@ -249,6 +247,7 @@ export default function UserForm() {
                 return (
                   <Autocomplete
                     {...field}
+                    fullWidth
                     disablePortal
                     options={departments?.deptsummary.map((option) => ({
                       id: option.id,

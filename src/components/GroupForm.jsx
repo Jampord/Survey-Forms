@@ -103,31 +103,30 @@ const GroupForm = () => {
             Add Group Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.groupName ? (
-              <Controller
-                name="groupName"
-                control={control}
-                defaultValue={groupsYup.defaultValues}
-                render={({ field }) => (
-                  <TextField {...field} label="Group Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="groupName"
-                control={control}
-                defaultValue={groupsYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="groupName"
+              control={control}
+              defaultValue={groupsYup.defaultValues}
+              render={({ field }) =>
+                !errors.groupName ? (
+                  <TextField
+                    {...field}
+                    label="Group Name"
+                    variant="filled"
+                    fullWidth
+                  />
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Group Name"
                     variant="filled"
                     helperText={errors.groupName.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
             <Controller
               control={control}
@@ -138,6 +137,7 @@ const GroupForm = () => {
                   <Autocomplete
                     {...field}
                     disablePortal
+                    fullWidth
                     options={branches?.branchsummary.map((option) => ({
                       id: option.id,
                       name: option.branchName,

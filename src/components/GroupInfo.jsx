@@ -266,7 +266,12 @@ const GroupInfo = () => {
               defaultValue={groupsYup.defaultValues}
               render={({ field }) =>
                 !errors.groupName ? (
-                  <TextField {...field} label="Group Name" variant="filled" />
+                  <TextField
+                    {...field}
+                    label="Group Name"
+                    variant="filled"
+                    fullWidth
+                  />
                 ) : (
                   <TextField
                     {...field}
@@ -274,6 +279,7 @@ const GroupInfo = () => {
                     label="Group Name"
                     variant="filled"
                     helperText={errors.groupName.message}
+                    fullWidth
                   />
                 )
               }
@@ -287,6 +293,7 @@ const GroupInfo = () => {
                 return (
                   <Autocomplete
                     {...field}
+                    fullWidth
                     disablePortal
                     options={branches?.branchsummary}
                     // value={options.id}

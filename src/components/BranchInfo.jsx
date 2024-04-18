@@ -239,57 +239,56 @@ const BranchInfo = () => {
             Edit Branch Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {!errors.branchName ? (
-              <Controller
-                name="branchName"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
-                  <TextField {...field} label="Branch Name" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="branchName"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="branchName"
+              control={control}
+              defaultValue={branchesYup.defaultValues}
+              render={({ field }) =>
+                !errors.branchName ? (
+                  <TextField
+                    {...field}
+                    label="Branch Name"
+                    variant="filled"
+                    fullWidth
+                  />
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Branch Name"
                     variant="filled"
                     helperText={errors.branchName.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
 
-            {!errors.branchCode ? (
-              <Controller
-                name="branchCode"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
-                  <TextField {...field} label="Branch Code" variant="filled" />
-                )}
-              />
-            ) : (
-              <Controller
-                name="branchCode"
-                control={control}
-                defaultValue={branchesYup.defaultValues}
-                render={({ field }) => (
+            <Controller
+              name="branchCode"
+              control={control}
+              defaultValue={branchesYup.defaultValues}
+              render={({ field }) =>
+                !errors.branchCode ? (
+                  <TextField
+                    {...field}
+                    label="Branch Code"
+                    variant="filled"
+                    fullWidth
+                  />
+                ) : (
                   <TextField
                     {...field}
                     error
                     label="Branch Code"
                     variant="filled"
                     helperText={errors.branchCode.message}
+                    fullWidth
                   />
-                )}
-              />
-            )}
+                )
+              }
+            />
+
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <Button
                 type="submit"

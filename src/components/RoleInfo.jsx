@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
   Modal,
   Table,
   TableBody,
@@ -36,6 +38,7 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
+import { navigationData } from "../routes/NavigationData";
 
 export const RoleInfo = () => {
   // const [roleInfo, setRoleInfo] = useState([]);
@@ -91,6 +94,8 @@ export const RoleInfo = () => {
     status: roleStatus,
     search: roleSearch,
   });
+
+  console.log(data);
 
   // useEffect(() => {
   //   const getAllRoles = async () => {
@@ -196,7 +201,7 @@ export const RoleInfo = () => {
                     <strong>Role Name</strong>
                   </TableCell>
                   <TableCell>
-                    <strong>Permission</strong>
+                    <strong>Permissions</strong>
                   </TableCell>
                   <TableCell>
                     <strong>Actions</strong>
@@ -264,7 +269,12 @@ export const RoleInfo = () => {
               defaultValue={rolesYup.defaultValues}
               render={({ field }) =>
                 !errors.roleName ? (
-                  <TextField {...field} label="Role Name" variant="filled" />
+                  <TextField
+                    {...field}
+                    label="Role Name"
+                    variant="filled"
+                    fullWidth
+                  />
                 ) : (
                   <TextField
                     {...field}
@@ -272,10 +282,22 @@ export const RoleInfo = () => {
                     label="Role Name"
                     variant="filled"
                     helperText={errors.roleName.message}
+                    fullWidth
                   />
                 )
               }
             />
+
+            {navigationData.map((item) => {
+              return (
+                <Box>
+                  <FormControlLabel
+                    control={<Checkbox name="permission" key={item.id} />}
+                    label={item.name}
+                  />
+                </Box>
+              );
+            })}
 
             {/* <Controller
               name="permission"

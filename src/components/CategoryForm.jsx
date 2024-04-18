@@ -103,6 +103,7 @@ const CategoryForm = () => {
                     {...field}
                     label="Category Name"
                     variant="filled"
+                    fullWidth
                   />
                 ) : (
                   <TextField
@@ -111,6 +112,7 @@ const CategoryForm = () => {
                     label="Category Name"
                     variant="filled"
                     helperText={errors.categoryName.message}
+                    fullWidth
                   />
                 )
               }
@@ -126,6 +128,7 @@ const CategoryForm = () => {
                     {...field}
                     label="Category Percentage"
                     variant="filled"
+                    fullWidth
                   />
                 ) : (
                   <TextField
@@ -134,6 +137,7 @@ const CategoryForm = () => {
                     label="Category Percentage"
                     variant="filled"
                     helperText={errors.categoryPercentage.message}
+                    fullWidth
                   />
                 )
               }
@@ -145,7 +149,12 @@ const CategoryForm = () => {
               defaultValue={categoriesYup.defaultValues}
               render={({ field }) =>
                 !errors.categoryPercentage ? (
-                  <TextField {...field} label="Score Limit" variant="filled" />
+                  <TextField
+                    {...field}
+                    label="Score Limit"
+                    variant="filled"
+                    fullWidth
+                  />
                 ) : (
                   <TextField
                     {...field}
@@ -153,6 +162,7 @@ const CategoryForm = () => {
                     label="Score Limit"
                     variant="filled"
                     helperText={errors.limit.message}
+                    fullWidth
                   />
                 )
               }

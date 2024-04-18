@@ -1,21 +1,31 @@
+import { useSelector } from "react-redux";
+import { navigationData } from "../routes/NavigationData";
 import CurrentDate from "./CurrentDate";
 import Logout from "./Logout";
 
 import "./NavBar.scss";
-import { Link } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export default function NavBar() {
+  const permissions = useSelector((state) => state.permissions.permissions);
+  // const navdata = navigationData;
+  const filteredNavdata = navigationData.filter((item) =>
+    permissions.includes(item.name)
+  );
+  console.log(filteredNavdata);
   return (
     <nav className="navbar">
       <div className="navbar__date">
         <CurrentDate />
-        <Link href="/">Home</Link>
-        <Link href="user-account">Users</Link>
-        <Link href="user-role">User Roles</Link>
-        <Link href="department">Department</Link>
-        <Link href="branch">Branch</Link>
-        <Link href="group">Group</Link>
-        <Link href="category">Category</Link>
+        <div className="navbar__items">
+          {navigationData.map((item) => {
+            return (
+              <Link to={item.path} key={item.id}>
+                <span className="navbar__spacer">{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
       <Logout />
     </nav>
