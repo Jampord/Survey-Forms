@@ -9,7 +9,7 @@ const Logout = () => {
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(clearToken());
-    localStorage.removeItem("encryptedToken");
+    // localStorage.removeItem("encryptedToken");
     localStorage.removeItem("fullName");
     localStorage.removeItem("permissions");
     navigate("/login");
