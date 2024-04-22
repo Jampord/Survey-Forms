@@ -24,6 +24,8 @@ export const usersYup = {
     roleId: yup.object().required("Please choose role."),
 
     departmentId: yup.object().required("Please choose department."),
+
+    groupsId: yup.object().required("Please choose group."),
   }),
   defaultValues: {
     fullName: "",
@@ -31,6 +33,7 @@ export const usersYup = {
     password: "",
     roleId: null,
     departmentId: null,
+    groupsId: null,
   },
 };
 
@@ -58,12 +61,14 @@ export const usersEditYup = {
     roleId: yup.object().required("Please choose role."),
 
     departmentId: yup.object().required("Please choose department."),
+    groupsId: yup.object().required("Please choose group."),
   }),
   defaultValues: {
     fullName: "",
     userName: "",
     roleId: null,
     departmentId: null,
+    groupsId: null,
   },
 };
 

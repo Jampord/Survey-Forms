@@ -20,13 +20,7 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
-import {
-  clearToken,
-  setFullName,
-  setRoleName,
-  setToken,
-  setUserName,
-} from "../features/auth/authSlice";
+import { clearToken, setFullName, setToken } from "../features/auth/authSlice";
 import { encryptToken } from "../features/tokenService";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { setPermissions } from "../redux/reducers/permissionsSlice";

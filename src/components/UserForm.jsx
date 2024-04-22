@@ -20,11 +20,13 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
+import { useGetAllGroupsQuery } from "../redux/api/groupAPI";
 
 export default function UserForm() {
   const [open, setOpen] = useState(false);
   const roleStatus = useSelector((state) => state.role.status);
   const departmentStatus = useSelector((state) => state.department.status);
+  const groupStatus = useSelector((state) => state.group.status);
   const dispatch = useDispatch();
   const snackbarMessage = useSelector((state) => state.snackbar.message);
   const snackbarSeverity = useSelector((state) => state.snackbar.severity);
@@ -63,6 +65,9 @@ export default function UserForm() {
   const { data: departments } = useGetAllDepartmentsQuery({
     status: departmentStatus,
   });
+  const { data: groups } = useGetAllGroupsQuery({
+    status: groupStatus,
+  });
 
   //end of api
 
@@ -81,6 +86,7 @@ export default function UserForm() {
       ...data,
       roleId: data.roleId.id,
       departmentId: data.departmentId.id,
+      groupsId: data.groupsId.id,
     };
     try {
       // await API.post("User/AddUser", data);
@@ -115,6 +121,7 @@ export default function UserForm() {
     display: "flex",
     flexDirection: "column",
   };
+  console.log(watch())
 
   return (
     <>
@@ -260,6 +267,38 @@ export default function UserForm() {
                         {...params}
                         label="Departments"
                         helperText="Please select a department."
+                      />
+                    )}
+                    onChange={(e, value) => field.onChange(value)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id && option.name === value.name
+                    }
+                  />
+                );
+              }}
+            />
+
+            <Controller
+              control={control}
+              name="groupsId"
+              defaultValue={usersYup.defaultValues}
+              render={({ field }) => {
+                return (
+                  <Autocomplete
+                    {...field}
+                    fullWidth
+                    disablePortal
+                    options={groups?.gcsummary.map((option) => ({
+                      id: option.id,
+                      name: option.groupName,
+                    }))}
+                    // value={options.id}
+                    getOptionLabel={(option) => option.name}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Groups"
+                        helperText="Please select a group."
                       />
                     )}
                     onChange={(e, value) => field.onChange(value)}

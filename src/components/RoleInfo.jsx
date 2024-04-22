@@ -47,7 +47,7 @@ export const RoleInfo = () => {
   const roleSearch = useSelector((state) => state.role.search);
   const roleStatus = useSelector((state) => state.role.status);
   const selectedRoleRow = useSelector((state) => state.selectedRow.selectedRow);
-  const [archiveRole, { error: dialogError }] = useArchiveRoleMutation();
+  const [archiveRole] = useArchiveRoleMutation();
   const [updateRole] = useUpdateRoleMutation();
   const dispatch = useDispatch();
   const snackbarMessage = useSelector((state) => state.snackbar.message);
@@ -95,7 +95,7 @@ export const RoleInfo = () => {
     search: roleSearch,
   });
 
-  console.log(data);
+  // console.log(data);
 
   // useEffect(() => {
   //   const getAllRoles = async () => {
@@ -116,6 +116,7 @@ export const RoleInfo = () => {
     handleSubmit,
     reset,
     setValue,
+    watch,
     control,
     formState: { errors },
   } = useForm({
@@ -125,8 +126,21 @@ export const RoleInfo = () => {
   });
 
   const onSubmit = async (data) => {
+    const permissionArray = [];
+
+    data.permission.map((item, index) => {
+      if (!item) {
+        return null;
+      }
+      return permissionArray.push(navigationData[index].name);
+    });
+
+    const transformData = {
+      ...data,
+      permission: permissionArray,
+    };
     try {
-      updateRole({ Id: selectedRoleRow?.id, body: data }).unwrap();
+      updateRole({ Id: selectedRoleRow?.id, body: transformData }).unwrap();
       reset();
       handleClose();
       dispatch(setSnackbarSeverity("success"));
@@ -182,6 +196,11 @@ export const RoleInfo = () => {
     }
   }, [open, selectedRoleRow, setValue]);
 
+  // console.log(navigationData);
+  console.log(errors);
+  console.log(watch());
+  // console.log(selectedRoleRow);
+
   return (
     <>
       {isFetching ? (
@@ -218,7 +237,9 @@ export const RoleInfo = () => {
                     >
                       <TableCell>{role.id}</TableCell>
                       <TableCell>{role.roleName}</TableCell>
-                      <TableCell>{role.permission}</TableCell>
+                      <TableCell>
+                        <span>{role.permission + " "}</span>
+                      </TableCell>
                       <TableCell>
                         <Box sx={{ display: "flex", gap: "10px" }}>
                           <Button
@@ -288,7 +309,7 @@ export const RoleInfo = () => {
               }
             />
 
-            {navigationData.map((item) => {
+            {/* {navigationData.map((item) => {
               return (
                 <Box>
                   <FormControlLabel
@@ -297,7 +318,25 @@ export const RoleInfo = () => {
                   />
                 </Box>
               );
-            })}
+            })} */}
+
+            <h5>Set Permissions:</h5>
+            {navigationData.map((item) => (
+              <Box key={item.id}>
+                <Controller
+                  control={control}
+                  name={`permission[${item.id - 1}]`} // Use an appropriate name for your form data
+                  defaultValue={false} // Set default value if needed
+                  render={({ field }) => (
+                    <FormControlLabel
+                      {...field}
+                      control={<Checkbox />}
+                      label={item.name}
+                    />
+                  )}
+                />
+              </Box>
+            ))}
 
             {/* <Controller
               name="permission"

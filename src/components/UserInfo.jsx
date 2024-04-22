@@ -41,6 +41,7 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
+import { useGetAllGroupsQuery } from "../redux/api/groupAPI";
 
 export default function UserInfo() {
   const [open, setOpen] = useState(false);
@@ -67,6 +68,7 @@ export default function UserInfo() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const roleStatus = useSelector((state) => state.role.status);
   const departmentStatus = useSelector((state) => state.department.status);
+  const groupStatus = useSelector((state) => state.group.status);
 
   const handlePageChange = (e, newPage) => {
     setPage(newPage);
@@ -105,6 +107,7 @@ export default function UserInfo() {
       ...data,
       roleId: data.roleId.id,
       departmentId: data.departmentId.id,
+      groupsId: data.groupsId.id,
     };
     try {
       await updateUser({
@@ -157,6 +160,7 @@ export default function UserInfo() {
   const { data: departments } = useGetAllDepartmentsQuery({
     status: departmentStatus,
   });
+  const { data: groups } = useGetAllGroupsQuery({ status: groupStatus });
   const [archiveUser] = useArchiveUserMutation();
   const [updateUser] = useUpdateUserMutation();
   // end of api
@@ -189,8 +193,14 @@ export default function UserInfo() {
           (dept) => dept.id === selectedUserRow?.departmentId
         )
       );
+      setValue(
+        "groupsId",
+        groups?.gcsummary?.find(
+          (group) => group.id === selectedUserRow?.groupsId
+        )
+      );
     }
-  }, [open, selectedUserRow, setValue, roles, departments]);
+  }, [open, selectedUserRow, setValue, roles, departments, groups]);
 
   console.log(errors);
   console.log(
@@ -222,10 +232,13 @@ export default function UserInfo() {
                       <strong>Username</strong>
                     </TableCell>
                     <TableCell>
+                      <strong>Role Name</strong>
+                    </TableCell>
+                    <TableCell>
                       <strong>Department Name</strong>
                     </TableCell>
                     <TableCell>
-                      <strong>Role Name</strong>
+                      <strong>Group Name</strong>
                     </TableCell>
                     <TableCell>
                       <strong>Actions</strong>
@@ -243,8 +256,9 @@ export default function UserInfo() {
                         <TableCell>{user.id}</TableCell>
                         <TableCell>{user.fullName}</TableCell>
                         <TableCell>{user.userName}</TableCell>
-                        <TableCell>{user.departmentName}</TableCell>
                         <TableCell>{user.roleName}</TableCell>
+                        <TableCell>{user.departmentName}</TableCell>
+                        <TableCell>{user.groupName}</TableCell>
                         <TableCell>
                           <Box sx={{ display: "flex", gap: "10px" }}>
                             <Button
@@ -417,6 +431,43 @@ export default function UserInfo() {
                           error
                           label="Departments"
                           helperText={errors.departmentId.message}
+                        />
+                      )
+                    }
+                    onChange={(e, value) => field.onChange(value)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id && option.name === value.name
+                    }
+                  />
+                );
+              }}
+            />
+
+            <Controller
+              control={control}
+              name="groupsId"
+              defaultValue={usersEditYup.defaultValues}
+              render={({ field }) => {
+                return (
+                  <Autocomplete
+                    {...field}
+                    disablePortal
+                    options={groups?.gcsummary}
+                    // value={options.id}
+                    getOptionLabel={(option) => option.groupName}
+                    renderInput={(params) =>
+                      !errors.groupsId ? (
+                        <TextField
+                          {...params}
+                          label="Groups"
+                          helperText="Please select group."
+                        />
+                      ) : (
+                        <TextField
+                          {...params}
+                          error
+                          label="Groups"
+                          helperText={errors.groupsId.message}
                         />
                       )
                     }

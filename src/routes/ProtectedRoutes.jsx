@@ -8,9 +8,9 @@ const ProtectedRoutes = () => {
   const token = useSelector((state) => state.auth.token);
   const fullName = useSelector((state) => state.auth.fullName);
   const permissions = useSelector((state) => state.permissions.permissions);
-  console.log(token, "hello");
-  console.log(fullName);
-  console.log(permissions);
+  // console.log(token, "hello");
+  // console.log(fullName);
+  // console.log(permissions);
 
   if (!token || !fullName || permissions?.length === 0) {
     return <Navigate to="/login" />;

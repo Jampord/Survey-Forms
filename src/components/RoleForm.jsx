@@ -60,8 +60,18 @@ export default function UserForm() {
   const [addRole, { isLoading }] = useAddRoleMutation();
 
   const onSubmit = async (data) => {
+    const permissionArray = [];
+
+    data.permission.map((item, index) => {
+      if (!item) {
+        return null;
+      }
+      return permissionArray.push(navigationData[index].name);
+    });
+
     const transformData = {
       ...data,
+      permission: permissionArray,
     };
     try {
       // await API.post("Role/AddNewRole", data);
@@ -72,6 +82,7 @@ export default function UserForm() {
       dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage("User Updated Successfully!"));
       onSnackbarOpen();
+      handleClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -155,19 +166,22 @@ export default function UserForm() {
               }}
             /> */}
 
+            <h5>Set Permissions:</h5>
             {navigationData.map((item) => (
-              <Controller
-                key={item.id}
-                name={`permission[${item.id - 1}]`}
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={<Checkbox {...field} />}
-                    label={item.name}
-                  />
-                )}
-              />
+              <Box key={item.id}>
+                <Controller
+                  control={control}
+                  name={`permission[${item.id - 1}]`} // Use an appropriate name for your form data
+                  defaultValue={false} // Set default value if needed
+                  render={({ field }) => (
+                    <FormControlLabel
+                      {...field}
+                      control={<Checkbox />}
+                      label={item.name}
+                    />
+                  )}
+                />
+              </Box>
             ))}
 
             {/* <Controller

@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { decryptToken } from "../tokenService";
 
-const storedToken = decryptToken(localStorage.getItem("encryptedToken")) || "";
+const storedToken = localStorage.getItem("encryptedToken") || "";
+// const storedToken = decryptToken(localStorage.getItem("encryptedToken")) || "";
 const storedFullname = localStorage.getItem("fullName") || "";
 
 export const authSlice = createSlice({
