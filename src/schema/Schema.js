@@ -80,7 +80,7 @@ export const rolesYup = {
       .max(15, "Max characters exceeded."),
     permission: yup.array(),
   }),
-  defaultValues: { roleName: "", permission: [""] },
+  defaultValues: { roleName: "", permission: [] },
 };
 
 export const departmentsYup = {

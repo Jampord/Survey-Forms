@@ -1,28 +1,35 @@
-.navbar {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  padding: 10px 20px;
-  color: #000;
-  background-color: #9a9a9a;
-  border-radius: 5px;
-  margin-bottom: 1px;
-  box-shadow: 0 0 2px 0.3px;
+// .navbar {
+//   display: flex;
+//   align-items: center;
+//   background-color: #fff;
+//   padding: 10px 20px;
+//   color: #000;
+//   background-color: #9a9a9a;
+//   border-radius: 5px;
+//   margin-bottom: 1px;
+//   box-shadow: 0 0 2px 0.3px;
 
-  &__date {
-    padding-left: 50px;
-    gap: 12px;
-    padding: 8px;
-  }
+//   &__date {
+//     padding-left: 50px;
+//     gap: 12px;
+//     padding: 8px;
+//   }
 
-  &__items {
-    display: flex;
+//   &__items {
+//     display: flex;
+//     gap: 10px;
 
-    .spacer {
-      margin-right: 10px;
-    }
-  }
-}
+//     & a {
+//       text-decoration: none;
+//     }
+
+//     &:hover,
+//     &.active {
+//       color: #fff; // Color when hovered or active
+//       font-weight: bold; // Make it bold when hovered or active
+//     }
+//   }
+// }
 
 // .rolePage {
 //   display: flex;
@@ -41,3 +48,71 @@
 //   &__content {
 //   }
 // }
+
+.navbar {
+  background-color: #97937d; /* Example background color */
+  color: #7d8197; /* Example text color */
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & button {
+    color: #171713;
+  }
+
+  &__date {
+    display: flex;
+    align-items: center;
+    gap: 150px;
+
+    .current-date {
+      font-size: 15px;
+      color: #171713;
+      text-align: left;
+      margin-top: 17px;
+      // margin-right: 50px;
+    }
+
+    .navbar__items {
+      display: flex;
+      gap: 10px;
+      margin-left: 20px; /* Adjust spacing between date and navigation items */
+
+      .navbar__items__spacer {
+        // margin-right: 10px; /* Adjust spacing between navigation items */
+        text-decoration: none;
+        color: inherit;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        &.selected {
+          background-color: #424037; /* Example selected item background color */
+          border-radius: 4px;
+          padding: 5px 10px;
+          // text-decoration: underline;
+          color: #ece6a0;
+        }
+      }
+
+      & a {
+        text-decoration: none;
+        color: #171713;
+      }
+    }
+  }
+
+  &__logout {
+    color: #fff; /* Example logout button color */
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

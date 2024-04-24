@@ -62,7 +62,6 @@ export default function UserInfo() {
     onClose: onConfirmDialogClose,
   } = useDisclosure();
 
-  console.log(selectedUserRow);
   //Table Pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -201,13 +200,6 @@ export default function UserInfo() {
       );
     }
   }, [open, selectedUserRow, setValue, roles, departments, groups]);
-
-  console.log(errors);
-  console.log(
-    roles?.rolesummary?.find((role) => role.id === selectedUserRow?.roleId)
-  );
-
-  console.log(watch());
 
   return (
     <>

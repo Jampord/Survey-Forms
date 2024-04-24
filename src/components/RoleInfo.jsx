@@ -128,11 +128,8 @@ export const RoleInfo = () => {
   const onSubmit = async (data) => {
     const permissionArray = [];
 
-    data.permission.map((item, index) => {
-      if (!item) {
-        return null;
-      }
-      return permissionArray.push(navigationData[index].name);
+    data.permission.forEach((item, index) => {
+      if (item === true) permissionArray.push(navigationData[index].name);
     });
 
     const transformData = {
@@ -191,10 +188,18 @@ export const RoleInfo = () => {
 
   useEffect(() => {
     if (open) {
+      const permissionData = navigationData.map((item) => {
+        if (selectedRoleRow?.permission?.includes(item.name)) {
+          return true;
+        } else {
+          return false;
+        }
+      });
       setValue("roleName", selectedRoleRow?.roleName);
-      setValue("permission", selectedRoleRow?.permission);
+      setValue("permission", permissionData);
+      console.log(data.permission);
     }
-  }, [open, selectedRoleRow, setValue]);
+  }, [open, selectedRoleRow, setValue, data]);
 
   // console.log(navigationData);
   console.log(errors);
@@ -321,16 +326,16 @@ export const RoleInfo = () => {
             })} */}
 
             <h5>Set Permissions:</h5>
-            {navigationData.map((item) => (
+            {navigationData.map((item, index) => (
               <Box key={item.id}>
                 <Controller
                   control={control}
-                  name={`permission[${item.id - 1}]`} // Use an appropriate name for your form data
-                  defaultValue={false} // Set default value if needed
+                  name={`permission[${index}]`} // Use an appropriate name for your form data
+                  // Set default value if needed
                   render={({ field }) => (
                     <FormControlLabel
                       {...field}
-                      control={<Checkbox />}
+                      control={<Checkbox checked={field.value} />}
                       label={item.name}
                     />
                   )}
