@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  useArchiveCategoryMutation,
+  useDeleteCategoryMutation,
   useGetAllCategoriesQuery,
   useUpdateCategoryMutation,
 } from "../redux/api/categoryAPI";
@@ -101,20 +101,14 @@ const CategoryInfo = () => {
 
   const onConfirm = async () => {
     try {
-      await archiveCategory({ Id: selectedCategoryRow?.id });
+      await deleteCategory({ Id: selectedCategoryRow?.id });
       onConfirmDialogClose();
       dispatch(setSnackbarSeverity("success"));
-      dispatch(
-        setSnackbarMessage(
-          categoryStatus
-            ? "Category Archived Successfully!"
-            : "Category Restored Successfully!"
-        )
-      );
+      dispatch(setSnackbarMessage("Category Deleted Successfully!"));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarSeverity("error"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }
@@ -140,7 +134,7 @@ const CategoryInfo = () => {
     PageSize: rowsPerPage,
   });
   const [updateCategory] = useUpdateCategoryMutation();
-  const [archiveCategory] = useArchiveCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
   //end of api
 
   const style = {
@@ -178,9 +172,9 @@ const CategoryInfo = () => {
               <Table className="table">
                 <TableHead>
                   <TableRow align="center">
-                    <TableCell>
+                    {/* <TableCell>
                       <strong>ID</strong>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       <strong>Category Name</strong>
                     </TableCell>
@@ -203,7 +197,7 @@ const CategoryInfo = () => {
                         key={category.id}
                         onClick={() => dispatch(setSelectedRow(category))}
                       >
-                        <TableCell>{category.id}</TableCell>
+                        {/* <TableCell>{category.id}</TableCell> */}
                         <TableCell>{category.categoryName}</TableCell>
                         <TableCell>{category.categoryPercentage}%</TableCell>
                         <TableCell>{category.limit}</TableCell>
@@ -221,11 +215,9 @@ const CategoryInfo = () => {
                               variant="contained"
                               size="small"
                               color={categoryStatus ? "error" : "warning"}
-                              onClick={() =>
-                                archiveCategory({ Id: category.id })
-                              }
+                              onClick={() => onConfirmDialogOpen()}
                             >
-                              {categoryStatus ? "Archive" : "Restore"}
+                              Delete
                             </Button>
                           </Box>
                         </TableCell>
@@ -252,7 +244,7 @@ const CategoryInfo = () => {
       <Modal open={open}>
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Edit User Form
+            Edit Category Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Controller
@@ -380,19 +372,11 @@ const CategoryInfo = () => {
       </Snackbar>
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
-        <DialogTitle>
-          {categoryStatus ? "Archive Category?" : "Restore Category?"}
-        </DialogTitle>
+        <DialogTitle>Delete Category</DialogTitle>
         <DialogContent>
-          {categoryStatus ? (
-            <DialogContentText>
-              Are you sure you want to archive this category?
-            </DialogContentText>
-          ) : (
-            <DialogContentText>
-              Are you sure you want to restore this category?
-            </DialogContentText>
-          )}
+          <DialogContentText>
+            Are you sure you want to delete this category?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button

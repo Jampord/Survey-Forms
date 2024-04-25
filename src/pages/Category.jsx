@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/Category.scss";
 import NavBar from "../components/NavBar";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -7,6 +8,7 @@ import {
 } from "../redux/reducers/categorySlice";
 import CategoryInfo from "../components/CategoryInfo";
 import CategoryForm from "../components/CategoryForm";
+import { Box, Checkbox, TextField } from "@mui/material";
 
 const Category = () => {
   const dispatch = useDispatch();
@@ -15,22 +17,18 @@ const Category = () => {
   return (
     <>
       <NavBar />
-      <div className="userRoleDiv">
+      <Box className="category">
         <h1>Category</h1>
         <CategoryForm />
-        <input
-          type="checkbox"
-          id="archiveCheckbox"
-          onChange={(e) => dispatch(setCategoryStatus(!status))}
-        />
-        <label htmlFor="archiveCheckbox">Archived</label>
-        <input
-          type="text"
+        <TextField
+          size="small"
+          type="search"
           id="searchBar"
           placeholder="Search..."
+          className="userAccountInput"
           onChange={(e) => dispatch(setCategorySearch(e.target.value))}
         />
-      </div>
+      </Box>
       <CategoryInfo />
     </>
   );

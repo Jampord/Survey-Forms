@@ -97,7 +97,7 @@ const BranchInfo = () => {
 
   const onConfirm = async () => {
     try {
-      await archiveBranch({ Id: selectedBranchRow?.id });
+      await archiveBranch({ Id: selectedBranchRow?.id }).unwrap();
       onConfirmDialogClose();
       dispatch(setSnackbarSeverity("success"));
       dispatch(
@@ -110,7 +110,7 @@ const BranchInfo = () => {
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarSeverity("error"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }

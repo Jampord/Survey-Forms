@@ -50,12 +50,14 @@
 // }
 
 .navbar {
-  background-color: #97937d; /* Example background color */
-  color: #7d8197; /* Example text color */
+  background-color: #97937d; 
+  color: #7d8197; 
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  // position: sticky;
+  // top: 0;
 
   & button {
     color: #171713;

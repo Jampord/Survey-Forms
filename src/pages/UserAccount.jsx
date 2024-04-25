@@ -1,4 +1,4 @@
-import "./UserAccount.scss";
+import "../styles/UserAccount.scss";
 import UserInfo from "../components/UserInfo";
 import NavBar from "../components/NavBar";
 

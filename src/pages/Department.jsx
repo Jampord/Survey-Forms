@@ -1,3 +1,4 @@
+import "../styles/Department.scss";
 import NavBar from "../components/NavBar";
 import { DepartmentInfo } from "../components/DepartmentInfo";
 import DepartmentForm from "../components/DepartmentForm";
@@ -6,6 +7,7 @@ import {
   setDepartmentSearch,
   setDepartmentStatus,
 } from "../redux/reducers/departmentSlice";
+import { Box, Checkbox, TextField } from "@mui/material";
 
 export default function Department() {
   const dispatch = useDispatch();
@@ -14,23 +16,24 @@ export default function Department() {
   return (
     <>
       <NavBar />
-      <div id="userRoleDiv">
+      <Box className="department">
         <h1>Department</h1>
         <DepartmentForm />
-        <input
-          type="checkbox"
+        <Checkbox
           id="archiveCheckbox"
           onChange={(e) => dispatch(setDepartmentStatus(!status))}
           value={status}
         />
         <label htmlFor="archiveCheckbox">Archived</label>
-        <input
-          type="text"
+        <TextField
+          size="small"
+          type="search"
           id="searchBar"
           placeholder="Search..."
+          className="userAccountInput"
           onChange={(e) => dispatch(setDepartmentSearch(e.target.value))}
         />
-      </div>
+      </Box>
       <DepartmentInfo />
     </>
   );

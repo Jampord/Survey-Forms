@@ -132,23 +132,23 @@ export const DepartmentInfo = () => {
 
   const onConfirm = async () => {
     try {
-      await archiveDepartment({ Id: selectedDepartmentRow?.id });
-      onConfirmDialogClose();
+      await archiveDepartment({ Id: selectedDepartmentRow?.id }).unwrap();
       dispatch(setSnackbarSeverity("success"));
       dispatch(
         setSnackbarMessage(
           departmentStatus
-            ? "User Archived Successfully!"
-            : "User Restored Successfully!"
+            ? "Department Archived Successfully!"
+            : "Department Restored Successfully!"
         )
       );
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarSeverity("error"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }
+    onConfirmDialogClose();
   };
 
   const style = {

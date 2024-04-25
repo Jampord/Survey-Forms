@@ -1,4 +1,3 @@
-import "./UserInfo.scss";
 import { useEffect, useState } from "react";
 
 import {
@@ -94,7 +93,7 @@ export default function UserInfo() {
     control,
     formState: { errors },
     setValue,
-    watch,
+    
   } = useForm({
     resolver: yupResolver(usersEditYup.schema),
     mode: "onChange",

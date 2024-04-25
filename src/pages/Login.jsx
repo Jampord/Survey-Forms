@@ -1,4 +1,4 @@
-import "./Login.scss";
+import "../styles/Login.scss";
 import user_icon from "../assets/user-icon.png";
 import password_icon from "../assets/password-icon.png";
 import { useState } from "react";
@@ -20,7 +20,7 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
-import { clearToken, setFullName, setToken } from "../features/auth/authSlice";
+import { setFullName, setToken } from "../features/auth/authSlice";
 import { encryptToken } from "../features/tokenService";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { setPermissions } from "../redux/reducers/permissionsSlice";
@@ -30,7 +30,7 @@ export default function Login() {
   // const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const [userLogin, { isLoading, isError, error }] = useUserLoginMutation();
+  const [userLogin, { isLoading }] = useUserLoginMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const snackbarMessage = useSelector((state) => state.snackbar.message);

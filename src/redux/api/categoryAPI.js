@@ -37,10 +37,10 @@ const categoryAPI = api
         invalidatesTags: ["category"],
       }),
 
-      archiveCategory: builder.mutation({
+      deleteCategory: builder.mutation({
         query: ({ Id }) => ({
-          url: `Category/Setisactive/${Id}`,
-          method: "PATCH",
+          url: `Category/DeleteCategory/${Id}`,
+          method: "DELETE",
           body: Id,
         }),
         invalidatesTags: ["category"],
@@ -51,6 +51,6 @@ const categoryAPI = api
 export const {
   useGetAllCategoriesQuery,
   useAddCategoryMutation,
-  useArchiveCategoryMutation,
+  useDeleteCategoryMutation,
   useUpdateCategoryMutation,
 } = categoryAPI;

@@ -3,27 +3,26 @@ import { navigationData } from "../routes/NavigationData";
 import CurrentDate from "./CurrentDate";
 import Logout from "./Logout";
 
-import "./NavBar.scss";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import "../styles/NavBar.scss";
+import { NavLink } from "react-router-dom";
 import { Button } from "@mui/material";
 
 export default function NavBar() {
-  const navigate = useNavigate();
   const permissions = useSelector((state) => state.permissions.permissions);
   const filteredNavdata = navigationData.filter((item) =>
     permissions.includes(item.name)
   );
   // const navdata = navigationData;
-  const [selectedItem, setSelectedItem] = useState(
-    permissions.length > 0 ? filteredNavdata[0].name : null
-  );
 
-  const handleItemClick = (item) => {
-    navigate(item.path);
-    setSelectedItem(item.name);
-  };
-  console.log(selectedItem, "selectedItem");
+  // useEffect(() => {
+  //   if (selectedItem) {
+  //     navigate(
+  //       selectedItem === filteredNavdata[0].name
+  //         ? "/"
+  //         : filteredNavdata.find((item) => item.name === selectedItem).path
+  //     );
+  //   }
+  // }, [selectedItem, navigate, filteredNavdata]);
 
   return (
     <nav className="navbar">
@@ -32,15 +31,19 @@ export default function NavBar() {
         <div className="navbar__items">
           {filteredNavdata.map((item) => {
             return (
-              <Button onClick={() => handleItemClick(item)}>
-                <span
-                  className={`navbar__items__spacer ${
-                    selectedItem === item.name ? "selected" : ""
-                  }`}
-                >
-                  {item.name}
-                </span>
-              </Button>
+              <NavLink to={item.path}>
+                {({ isActive }) => (
+                  <Button>
+                    <span
+                      className={`navbar__items__spacer ${
+                        isActive ? "selected" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </span>
+                  </Button>
+                )}
+              </NavLink>
             );
           })}
         </div>

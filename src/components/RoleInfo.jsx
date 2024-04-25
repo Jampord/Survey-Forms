@@ -151,10 +151,9 @@ export const RoleInfo = () => {
     }
   };
 
-  const onConfirm = () => {
+  const onConfirm = async () => {
     try {
-      archiveRole({ Id: selectedRoleRow?.id }).unwrap();
-      onConfirmDialogClose();
+      await archiveRole({ Id: selectedRoleRow?.id }).unwrap();
       dispatch(setSnackbarSeverity("success"));
       dispatch(
         setSnackbarMessage(
@@ -170,6 +169,7 @@ export const RoleInfo = () => {
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }
+    onConfirmDialogClose();
   };
 
   const style = {

@@ -1,4 +1,5 @@
 import React from "react";
+import "../styles/Branch.scss";
 import NavBar from "../components/NavBar";
 import BranchForm from "../components/BranchForm";
 import BranchInfo from "../components/BranchInfo";
@@ -7,6 +8,7 @@ import {
   setBranchSearch,
   setBranchStatus,
 } from "../redux/reducers/branchSlice";
+import { Box, Checkbox, TextField } from "@mui/material";
 
 const Branch = () => {
   const dispatch = useDispatch();
@@ -15,23 +17,24 @@ const Branch = () => {
   return (
     <>
       <NavBar />
-      <div className="userRoleDiv">
+      <Box className="branch">
         <h1>Branch</h1>
         <BranchForm />
-        <input
-          type="checkbox"
+        <Checkbox
           id="archiveCheckbox"
           onChange={(e) => dispatch(setBranchStatus(!status))}
           value={status}
         />
         <label htmlFor="archiveCheckbox">Archived</label>
-        <input
-          type="text"
+        <TextField
+          size="small"
+          type="search"
           id="searchBar"
           placeholder="Search..."
+          className="userAccountInput"
           onChange={(e) => dispatch(setBranchSearch(e.target.value))}
         />
-      </div>
+      </Box>
       <BranchInfo />
     </>
   );

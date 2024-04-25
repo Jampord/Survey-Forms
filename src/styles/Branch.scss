@@ -1,0 +1,13 @@
+.branch {
+  padding: 10px;
+  background-color: #eeeeee;
+  border-radius: 5px;
+  // box-shadow: 0 0 2px 0.3px;
+  margin-bottom: 10px;
+
+  &__userAccountInput {
+    padding-inline: 10px;
+    margin-left: 20px;
+    width: 200px;
+  }
+}

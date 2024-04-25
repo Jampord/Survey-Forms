@@ -1,5 +1,5 @@
 import NavBar from "../components/NavBar";
-import "./Home.scss";
+import "../styles/Home.scss";
 export default function HomePage() {
   return (
     <>

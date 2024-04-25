@@ -81,7 +81,7 @@ export default function DepartmentForm() {
         id="addButton"
         variant="contained"
         onClick={handleOpen}
-        sx={{ height: "25px", marginBottom: "5px" }}
+        size="small"
       >
         Add
       </Button>
