@@ -15,6 +15,9 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  Menu,
+  MenuItem,
+  Divider,
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -27,6 +30,7 @@ import {
   useArchiveUserMutation,
   useGetAllRolesQuery,
   useGetAllUsersQuery,
+  useResetPasswordMutation,
   useUpdateUserMutation,
 } from "../redux/api/userAPI";
 import { Controller, useForm } from "react-hook-form";
@@ -41,6 +45,12 @@ import {
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
 import { useGetAllGroupsQuery } from "../redux/api/groupAPI";
+import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
+import EditIcon from "@mui/icons-material/Edit";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
+import KeyIcon from "@mui/icons-material/Key";
+import PasswordIcon from "@mui/icons-material/Password";
 
 export default function UserInfo() {
   const [open, setOpen] = useState(false);
@@ -60,6 +70,11 @@ export default function UserInfo() {
     onOpen: onConfirmDialogOpen,
     onClose: onConfirmDialogClose,
   } = useDisclosure();
+  const {
+    isOpen: isResetPasswordDialogOpen,
+    onOpen: onResetPasswordDialogOpen,
+    onClose: onResetPasswordDialogClose,
+  } = useDisclosure();
 
   //Table Pagination
   const [page, setPage] = useState(0);
@@ -78,6 +93,17 @@ export default function UserInfo() {
   };
 
   //end of table pagination
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const handleClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenuIndex(index);
+  };
+
+  const onMenuClose = () => {
+    setAnchorEl(null);
+    setOpenMenuIndex(null);
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -93,7 +119,6 @@ export default function UserInfo() {
     control,
     formState: { errors },
     setValue,
-    
   } = useForm({
     resolver: yupResolver(usersEditYup.schema),
     mode: "onChange",
@@ -117,6 +142,7 @@ export default function UserInfo() {
       dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage("User Updated Successfully!"));
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -138,9 +164,26 @@ export default function UserInfo() {
         )
       );
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbarMessage(err.data));
+      onSnackbarOpen();
+    }
+  };
+
+  const onConfirmResetPassword = async () => {
+    try {
+      await resetPassword({ Id: selectedUserRow?.id });
+      onResetPasswordDialogClose();
       dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbarMessage("Password was reset!"));
+      onSnackbarOpen();
+      onMenuClose();
+    } catch (err) {
+      console.log(err);
+      dispatch(setSnackbarSeverity("error"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
     }
@@ -161,6 +204,7 @@ export default function UserInfo() {
   const { data: groups } = useGetAllGroupsQuery({ status: groupStatus });
   const [archiveUser] = useArchiveUserMutation();
   const [updateUser] = useUpdateUserMutation();
+  const [resetPassword] = useResetPasswordMutation();
   // end of api
 
   const style = {
@@ -199,6 +243,8 @@ export default function UserInfo() {
       );
     }
   }, [open, selectedUserRow, setValue, roles, departments, groups]);
+
+  console.log(selectedUserRow);
 
   return (
     <>
@@ -239,6 +285,9 @@ export default function UserInfo() {
 
                 <TableBody>
                   {data?.usersummary.map((user, index) => {
+                    const isMenuOpen = Boolean(
+                      anchorEl && openMenuIndex === index
+                    );
                     return (
                       <TableRow
                         key={index}
@@ -251,12 +300,13 @@ export default function UserInfo() {
                         <TableCell>{user.departmentName}</TableCell>
                         <TableCell>{user.groupName}</TableCell>
                         <TableCell>
-                          <Box sx={{ display: "flex", gap: "10px" }}>
+                          {/* <Box sx={{ display: "flex", gap: "10px" }}>
                             <Button
                               variant="contained"
                               size="small"
                               onClick={handleOpen}
                             >
+                              <EditIcon />
                               Edit
                             </Button>
                             <Button
@@ -268,7 +318,42 @@ export default function UserInfo() {
                             >
                               {userStatus ? "Archive" : "Restore"}
                             </Button>
-                          </Box>
+                          </Box> */}
+
+                          <ExpandCircleDownIcon
+                            onClick={(event) => handleClick(event, index)}
+                          />
+                          <Menu
+                            keepMounted
+                            open={isMenuOpen}
+                            onClose={onMenuClose}
+                            anchorEl={anchorEl}
+                          >
+                            <MenuItem onClick={handleOpen}>
+                              <EditIcon />
+                              Edit
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem onClick={() => onConfirmDialogOpen()}>
+                              {userStatus ? (
+                                <>
+                                  <ArchiveIcon /> Archive
+                                </>
+                              ) : (
+                                <>
+                                  <UnarchiveIcon />
+                                  Restore
+                                </>
+                              )}
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem
+                              onClick={() => onResetPasswordDialogOpen()}
+                            >
+                              <KeyIcon />
+                              Reset Password
+                            </MenuItem>
+                          </Menu>
                         </TableCell>
                       </TableRow>
                     );
@@ -515,16 +600,18 @@ export default function UserInfo() {
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
-          {userStatus ? "Archive User?" : "Restore User?"}
+          {userStatus ? "Archive User" : "Restore User"}
         </DialogTitle>
         <DialogContent>
           {userStatus ? (
             <DialogContentText>
-              Are you sure you want to archive this user?
+              Are you sure you want to archive{" "}
+              {selectedUserRow ? selectedUserRow.fullName : null}?
             </DialogContentText>
           ) : (
             <DialogContentText>
-              Are you sure you want to restore this user?
+              Are you sure you want to restore{" "}
+              {selectedUserRow ? selectedUserRow.fullName : null}?
             </DialogContentText>
           )}
         </DialogContent>
@@ -545,6 +632,46 @@ export default function UserInfo() {
           </Button>
           <Button
             onClick={onConfirmDialogClose}
+            variant="outlined"
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              fontSize: 12,
+            }}
+          >
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={isResetPasswordDialogOpen}
+        onClose={onResetPasswordDialogClose}
+      >
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You cannot undo this process. Are you sure you want to reset the
+            password of {selectedUserRow ? selectedUserRow.fullName : null}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onConfirmResetPassword}
+            variant="contained"
+            autoFocus
+            color={"error"}
+            sx={{
+              display: "inline-flex",
+              width: 80,
+              marginRight: 0,
+              fontSize: 12,
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            onClick={onResetPasswordDialogClose}
             variant="outlined"
             sx={{
               display: "inline-flex",

@@ -155,3 +155,12 @@ export const loginYup = {
   }),
   defaultValues: { userName: "", password: "" },
 };
+
+export const changePasswordYup = {
+  schema: yup.object({
+    password: yup.string().required("Enter password"),
+    newPassword: yup.string().required("Enter password"),
+    confirmPassword: yup.string().required("Enter password"),
+  }),
+  defaultValues: { password: "", newPassword: "", confirmPassword: "" },
+};

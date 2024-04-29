@@ -8,6 +8,7 @@ import {
   setDepartmentStatus,
 } from "../redux/reducers/departmentSlice";
 import { Box, Checkbox, TextField } from "@mui/material";
+import Sidebar from "../components/SideBar";
 
 export default function Department() {
   const dispatch = useDispatch();
@@ -15,7 +16,8 @@ export default function Department() {
 
   return (
     <>
-      <NavBar />
+      <Sidebar>
+      {/* <NavBar /> */}
       <Box className="department">
         <h1>Department</h1>
         <DepartmentForm />
@@ -35,6 +37,7 @@ export default function Department() {
         />
       </Box>
       <DepartmentInfo />
+      </Sidebar>
     </>
   );
 }

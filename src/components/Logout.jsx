@@ -29,7 +29,6 @@ const Logout = () => {
   return (
     <>
       <Button
-        id="addButton"
         variant="contained"
         onClick={onConfirmDialogOpen}
         // color="error"

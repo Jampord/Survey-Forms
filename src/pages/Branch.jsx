@@ -9,6 +9,7 @@ import {
   setBranchStatus,
 } from "../redux/reducers/branchSlice";
 import { Box, Checkbox, TextField } from "@mui/material";
+import Sidebar from "../components/SideBar";
 
 const Branch = () => {
   const dispatch = useDispatch();
@@ -16,26 +17,28 @@ const Branch = () => {
 
   return (
     <>
-      <NavBar />
-      <Box className="branch">
-        <h1>Branch</h1>
-        <BranchForm />
-        <Checkbox
-          id="archiveCheckbox"
-          onChange={(e) => dispatch(setBranchStatus(!status))}
-          value={status}
-        />
-        <label htmlFor="archiveCheckbox">Archived</label>
-        <TextField
-          size="small"
-          type="search"
-          id="searchBar"
-          placeholder="Search..."
-          className="userAccountInput"
-          onChange={(e) => dispatch(setBranchSearch(e.target.value))}
-        />
-      </Box>
-      <BranchInfo />
+      <Sidebar>
+        {/* <NavBar /> */}
+        <Box className="branch">
+          <h1>Branch</h1>
+          <BranchForm />
+          <Checkbox
+            id="archiveCheckbox"
+            onChange={(e) => dispatch(setBranchStatus(!status))}
+            value={status}
+          />
+          <label htmlFor="archiveCheckbox">Archived</label>
+          <TextField
+            size="small"
+            type="search"
+            id="searchBar"
+            placeholder="Search..."
+            className="userAccountInput"
+            onChange={(e) => dispatch(setBranchSearch(e.target.value))}
+          />
+        </Box>
+        <BranchInfo />
+      </Sidebar>
     </>
   );
 };

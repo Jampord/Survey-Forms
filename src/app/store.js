@@ -10,6 +10,7 @@ import categorySlice from "../redux/reducers/categorySlice";
 import snackbarSlice from "../redux/reducers/snackbarSlice";
 import authSlice from "../features/auth/authSlice";
 import permissionsSlice from "../redux/reducers/permissionsSlice";
+import sidebarSlice from "../redux/reducers/sidebarSlice";
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     snackbar: snackbarSlice,
     auth: authSlice,
     permissions: permissionsSlice,
+    sidebar: sidebarSlice,
     [api.reducerPath]: api.reducer,
     [userAPI.reducerPath]: userAPI.reducer,
   },

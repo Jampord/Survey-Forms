@@ -6,6 +6,7 @@ import RoleForm from "../components/RoleForm";
 import { Box, Checkbox, TextField } from "@mui/material";
 import { setRoleSearch, setRoleStatus } from "../redux/reducers/roleSlice";
 import { useDispatch, useSelector } from "react-redux";
+import Sidebar from "../components/SideBar";
 
 export default function UserRole() {
   const dispatch = useDispatch();
@@ -13,28 +14,30 @@ export default function UserRole() {
 
   return (
     <>
-      <NavBar />
-      <Box className="userRole">
-        <h1 className="userHeader">User Role</h1>
-        <RoleForm />
-        <Checkbox
-          id="archiveCheckbox"
-          onChange={(e) => dispatch(setRoleStatus(!status))}
-          value={status}
-        />
-        <label htmlFor="archiveCheckbox" className="userAccountInput">
-          Archived
-        </label>
-        <TextField
-          size="small"
-          type="search"
-          id="searchBar"
-          placeholder="Search..."
-          className="userAccountInput"
-          onChange={(e) => dispatch(setRoleSearch(e.target.value))}
-        />
-      </Box>
-      <RoleInfo />
+      <Sidebar>
+        {/* <NavBar /> */}
+        <Box className="userRole">
+          <h1 className="userHeader">User Role</h1>
+          <RoleForm />
+          <Checkbox
+            id="archiveCheckbox"
+            onChange={(e) => dispatch(setRoleStatus(!status))}
+            value={status}
+          />
+          <label htmlFor="archiveCheckbox" className="userAccountInput">
+            Archived
+          </label>
+          <TextField
+            size="small"
+            type="search"
+            id="searchBar"
+            placeholder="Search..."
+            className="userAccountInput"
+            onChange={(e) => dispatch(setRoleSearch(e.target.value))}
+          />
+        </Box>
+        <RoleInfo />
+      </Sidebar>
     </>
   );
 }

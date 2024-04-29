@@ -45,6 +45,24 @@ const userAPI = api
         }),
         invalidatesTags: ["user"],
       }),
+
+      resetPassword: builder.mutation({
+        query: ({ Id }) => ({
+          url: `User/Resetpassword/${Id}`,
+          method: "PUT",
+          body: Id,
+        }),
+        invalidatesTags: ["user"],
+      }),
+
+      changePassword: builder.mutation({
+        query: ({ Id }) => ({
+          url: `User/UpdatePassword/{Id}`,
+          method: "PUT",
+          body: Id,
+        }),
+        invalidatesTags: ["user"],
+      }),
     }),
   });
 
@@ -53,6 +71,8 @@ export const {
   useAddUserMutation,
   useArchiveUserMutation,
   useUpdateUserMutation,
+  useResetPasswordMutation,
+  useChangePasswordMutation,
 } = userAPI;
 
 const roleAPI = api
