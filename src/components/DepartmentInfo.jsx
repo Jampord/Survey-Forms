@@ -3,6 +3,9 @@ import {
   Box,
   Button,
   CircularProgress,
+  Divider,
+  Menu,
+  MenuItem,
   Modal,
   Table,
   TableBody,
@@ -37,6 +40,10 @@ import {
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
 import { useGetAllDummyUsersQuery } from "../redux/api/dummyDepartmentAPI";
+import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
+import EditIcon from "@mui/icons-material/Edit";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 
 export const DepartmentInfo = () => {
   const [open, setOpen] = useState(false);
@@ -95,6 +102,18 @@ export const DepartmentInfo = () => {
   console.log(dummyUsers);
   //end of dept api
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const handleClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenuIndex(index);
+  };
+
+  const onMenuClose = () => {
+    setAnchorEl(null);
+    setOpenMenuIndex(null);
+  };
+
   const {
     handleSubmit,
     reset,
@@ -122,6 +141,7 @@ export const DepartmentInfo = () => {
       dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage("Department Updated Successfully!"));
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -142,6 +162,7 @@ export const DepartmentInfo = () => {
         )
       );
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -200,7 +221,10 @@ export const DepartmentInfo = () => {
               </TableHead>
 
               <TableBody>
-                {data?.deptsummary.map((department) => {
+                {data?.deptsummary.map((department, index) => {
+                  const isMenuOpen = Boolean(
+                    anchorEl && openMenuIndex === index
+                  );
                   return (
                     <TableRow
                       key={department.id}
@@ -210,23 +234,33 @@ export const DepartmentInfo = () => {
                       <TableCell>{department.departmentName}</TableCell>
                       <TableCell>{department.departmentNo}</TableCell>
                       <TableCell>
-                        <Box sx={{ display: "flex", gap: "10px" }}>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            onClick={handleOpen}
-                          >
+                        <ExpandCircleDownIcon
+                          onClick={(event) => handleClick(event, index)}
+                        />
+                        <Menu
+                          keepMounted
+                          open={isMenuOpen}
+                          onClose={onMenuClose}
+                          anchorEl={anchorEl}
+                        >
+                          <MenuItem onClick={handleOpen}>
+                            <EditIcon />
                             Edit
-                          </Button>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            color={departmentStatus ? "error" : "warning"}
-                            onClick={() => onConfirmDialogOpen()}
-                          >
-                            {departmentStatus ? "Archive" : "Restore"}
-                          </Button>
-                        </Box>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={() => onConfirmDialogOpen()}>
+                            {departmentStatus ? (
+                              <>
+                                <ArchiveIcon /> Archive
+                              </>
+                            ) : (
+                              <>
+                                <UnarchiveIcon />
+                                Restore
+                              </>
+                            )}
+                          </MenuItem>
+                        </Menu>
                       </TableCell>
                     </TableRow>
                   );
@@ -349,16 +383,24 @@ export const DepartmentInfo = () => {
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
-          {departmentStatus ? "Archive Department?" : "Restore Department?"}
+          {departmentStatus ? "Archive Department" : "Restore Department"}
         </DialogTitle>
         <DialogContent>
           {departmentStatus ? (
             <DialogContentText>
-              Are you sure you want to archive this department?
+              Are you sure you want to archive{" "}
+              {selectedDepartmentRow
+                ? selectedDepartmentRow.departmentName
+                : null}
+              ?
             </DialogContentText>
           ) : (
             <DialogContentText>
-              Are you sure you want to restore this department?
+              Are you sure you want to restore{" "}
+              {selectedDepartmentRow
+                ? selectedDepartmentRow.departmentName
+                : null}
+              ?
             </DialogContentText>
           )}
         </DialogContent>

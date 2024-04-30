@@ -11,15 +11,15 @@ export const usersYup = {
       .required("Please enter username.")
       .min(2)
       .max(30, "Max characters exceeded."),
-    password: yup
-      .string()
-      .required("Password is required.")
-      .min(8, "Password must be at least 8 characters.")
-      .max(20, "Password must be at most 20 characters.")
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-      ),
+    // password: yup
+    //   .string()
+    //   .required("Password is required.")
+    //   .min(8, "Password must be at least 8 characters.")
+    //   .max(20, "Password must be at most 20 characters.")
+    //   .matches(
+    //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]+$/,
+    //     "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+    //   ),
 
     roleId: yup.object().required("Please choose role."),
 
@@ -141,6 +141,7 @@ export const categoriesYup = {
 
     limit: yup
       .number()
+      .typeError("Enter score limit")
       .required("Enter score limit.")
       .max(100, "Score limit is 100")
       .min(1, "Score limit should be greater than 0"),
@@ -163,4 +164,11 @@ export const changePasswordYup = {
     confirmPassword: yup.string().required("Enter password"),
   }),
   defaultValues: { password: "", newPassword: "", confirmPassword: "" },
+};
+
+export const groupSurveyYup = {
+  schema: yup.object({
+    groupsId: yup.object().required("Please choose group."),
+  }),
+  defaultValues: { groupsId: "" },
 };

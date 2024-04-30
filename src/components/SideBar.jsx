@@ -149,6 +149,7 @@ export default function Sidebar({ children }) {
 
   const onMenuClose = () => {
     setIsMenuOpen(false);
+    setAnchorEl(null);
   };
 
   //Logout

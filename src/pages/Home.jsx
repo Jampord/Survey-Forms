@@ -1,7 +1,30 @@
+import { Box, Modal } from "@mui/material";
 import NavBar from "../components/NavBar";
 import Sidebar from "../components/SideBar";
 import "../styles/Home.scss";
+import GradingForm from "../components/GradingForm";
+import useDisclosure from "../hooks/useDisclosure";
 export default function HomePage() {
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose: onModalClose,
+  } = useDisclosure();
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 550,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    display: "flex",
+    flexDirection: "column",
+  };
+
   return (
     <>
       <Sidebar>
@@ -20,8 +43,10 @@ export default function HomePage() {
               </section>
               <section className="start-survey">
                 <h2>Start Survey</h2>
-                <p>Click the button below to begin the survey.</p>
-                <button className="start-button">Start Survey</button>
+                <p>Click the button below to begin the grading.</p>
+                <button className="start-button" onClick={() => onModalOpen()}>
+                  Start Grading
+                </button>
               </section>
             </main>
             <footer>
@@ -29,6 +54,12 @@ export default function HomePage() {
             </footer>
           </div>
         </div>
+
+        <Modal open={isModalOpen} onClose={onModalClose} keepMounted={true}>
+          <Box sx={style}>
+            <GradingForm />
+          </Box>
+        </Modal>
       </Sidebar>
     </>
   );

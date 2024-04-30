@@ -8,6 +8,9 @@ import {
   Box,
   Button,
   CircularProgress,
+  Divider,
+  Menu,
+  MenuItem,
   Modal,
   Table,
   TableBody,
@@ -36,6 +39,9 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
+import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const CategoryInfo = () => {
   const [open, setOpen] = useState(false);
@@ -72,6 +78,17 @@ const CategoryInfo = () => {
   };
 
   //end of table pagination
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const handleClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenuIndex(index);
+  };
+
+  const onMenuClose = () => {
+    setAnchorEl(null);
+    setOpenMenuIndex(null);
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -91,11 +108,13 @@ const CategoryInfo = () => {
       dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage("Category Updated Successfully!"));
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
       dispatch(setSnackbarMessage(err.data));
       onSnackbarOpen();
+      onMenuClose();
     }
   };
 
@@ -191,7 +210,10 @@ const CategoryInfo = () => {
                 </TableHead>
 
                 <TableBody>
-                  {data?.categorysummary.map((category) => {
+                  {data?.categorysummary.map((category, index) => {
+                    const isMenuOpen = Boolean(
+                      anchorEl && openMenuIndex === index
+                    );
                     return (
                       <TableRow
                         key={category.id}
@@ -203,23 +225,24 @@ const CategoryInfo = () => {
                         <TableCell>{category.limit}</TableCell>
 
                         <TableCell>
-                          <Box sx={{ display: "flex", gap: "10px" }}>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              onClick={handleOpen}
-                            >
+                          <ExpandCircleDownIcon
+                            onClick={(event) => handleClick(event, index)}
+                          />
+                          <Menu
+                            keepMounted
+                            open={isMenuOpen}
+                            onClose={onMenuClose}
+                            anchorEl={anchorEl}
+                          >
+                            <MenuItem onClick={handleOpen}>
+                              <EditIcon />
                               Edit
-                            </Button>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              color={categoryStatus ? "error" : "warning"}
-                              onClick={() => onConfirmDialogOpen()}
-                            >
-                              Delete
-                            </Button>
-                          </Box>
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem onClick={() => onConfirmDialogOpen()}>
+                              <DeleteIcon /> Delete
+                            </MenuItem>
+                          </Menu>
                         </TableCell>
                       </TableRow>
                     );
@@ -294,7 +317,7 @@ const CategoryInfo = () => {
                     label="Category Percentage"
                     variant="filled"
                     type="number"
-                    helperText={errors.categoryPercentage.message}
+                    helperText={errors?.categoryPercentage?.message}
                     fullWidth
                   />
                 )
@@ -375,7 +398,8 @@ const CategoryInfo = () => {
         <DialogTitle>Delete Category</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this category?
+            Are you sure you want to delete{" "}
+            {selectedCategoryRow ? selectedCategoryRow.categoryName : null}?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -189,7 +189,7 @@ export default function UserForm() {
               }
             />
 
-            <Controller
+            {/* <Controller
               name="password"
               control={control}
               defaultValue={usersYup.defaultValues}
@@ -212,7 +212,7 @@ export default function UserForm() {
                   />
                 )
               }
-            />
+            /> */}
 
             <Controller
               control={control}

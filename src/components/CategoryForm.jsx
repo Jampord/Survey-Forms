@@ -77,6 +77,8 @@ const CategoryForm = () => {
     flexDirection: "column",
   };
 
+  console.log(errors);
+
   return (
     <div>
       <Button
@@ -136,7 +138,7 @@ const CategoryForm = () => {
                     error
                     label="Category Percentage"
                     variant="filled"
-                    helperText={errors.categoryPercentage.message}
+                    helperText={errors?.categoryPercentage?.message}
                     fullWidth
                   />
                 )
@@ -161,7 +163,7 @@ const CategoryForm = () => {
                     error
                     label="Score Limit"
                     variant="filled"
-                    helperText={errors.limit.message}
+                    helperText={errors?.limit?.message}
                     fullWidth
                   />
                 )

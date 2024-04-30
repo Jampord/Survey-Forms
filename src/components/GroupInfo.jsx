@@ -19,6 +19,9 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  Menu,
+  MenuItem,
+  Divider,
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -38,6 +41,10 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
+import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
+import EditIcon from "@mui/icons-material/Edit";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 
 const GroupInfo = () => {
   const [open, setOpen] = useState(false);
@@ -95,6 +102,17 @@ const GroupInfo = () => {
   const branchStatus = useSelector((state) => state.branch.status);
   const { data: branches } = useGetAllBranchesQuery({ status: branchStatus });
   // end of api
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const handleClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenuIndex(index);
+  };
+
+  const onMenuClose = () => {
+    setAnchorEl(null);
+    setOpenMenuIndex(null);
+  };
 
   const {
     handleSubmit,
@@ -123,6 +141,7 @@ const GroupInfo = () => {
       dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage("Group Updated Successfully!"));
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -144,6 +163,7 @@ const GroupInfo = () => {
         )
       );
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("success"));
@@ -207,7 +227,10 @@ const GroupInfo = () => {
               </TableHead>
 
               <TableBody>
-                {data?.gcsummary.map((group) => {
+                {data?.gcsummary.map((group, index) => {
+                  const isMenuOpen = Boolean(
+                    anchorEl && openMenuIndex === index
+                  );
                   return (
                     <TableRow
                       key={group.id}
@@ -217,23 +240,33 @@ const GroupInfo = () => {
                       <TableCell>{group.groupName}</TableCell>
                       <TableCell>{group.branchName}</TableCell>
                       <TableCell>
-                        <Box sx={{ display: "flex", gap: "10px" }}>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            onClick={handleOpen}
-                          >
+                        <ExpandCircleDownIcon
+                          onClick={(event) => handleClick(event, index)}
+                        />
+                        <Menu
+                          keepMounted
+                          open={isMenuOpen}
+                          onClose={onMenuClose}
+                          anchorEl={anchorEl}
+                        >
+                          <MenuItem onClick={handleOpen}>
+                            <EditIcon />
                             Edit
-                          </Button>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            color={groupStatus ? "error" : "warning"}
-                            onClick={() => onConfirmDialogOpen()}
-                          >
-                            {groupStatus ? "Archive" : "Restore"}
-                          </Button>
-                        </Box>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={() => onConfirmDialogOpen()}>
+                            {groupStatus ? (
+                              <>
+                                <ArchiveIcon /> Archive
+                              </>
+                            ) : (
+                              <>
+                                <UnarchiveIcon />
+                                Restore
+                              </>
+                            )}
+                          </MenuItem>
+                        </Menu>
                       </TableCell>
                     </TableRow>
                   );
@@ -367,16 +400,18 @@ const GroupInfo = () => {
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
-          {groupStatus ? "Archive Group?" : "Restore Group?"}
+          {groupStatus ? "Archive Group" : "Restore Group"}
         </DialogTitle>
         <DialogContent>
           {groupStatus ? (
             <DialogContentText>
-              Are you sure you want to archive this group?
+              Are you sure you want to archive{" "}
+              {selectedGroupRow ? selectedGroupRow.groupName : null}?
             </DialogContentText>
           ) : (
             <DialogContentText>
-              Are you sure you want to restore this group?
+              Are you sure you want to restore{" "}
+              {selectedGroupRow ? selectedGroupRow.groupName : null}?
             </DialogContentText>
           )}
         </DialogContent>

@@ -8,6 +8,9 @@ import {
   Box,
   Button,
   CircularProgress,
+  Divider,
+  Menu,
+  MenuItem,
   Modal,
   Table,
   TableBody,
@@ -36,6 +39,10 @@ import {
   setSnackbarMessage,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
+import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
+import EditIcon from "@mui/icons-material/Edit";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 
 const BranchInfo = () => {
   const branchSearch = useSelector((state) => state.branch.search);
@@ -87,6 +94,7 @@ const BranchInfo = () => {
       dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage("Branch Updated Successfully!"));
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -108,6 +116,7 @@ const BranchInfo = () => {
         )
       );
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -124,6 +133,18 @@ const BranchInfo = () => {
   });
   const [archiveBranch] = useArchiveBranchMutation();
   const [updateBranch] = useUpdateBranchMutation();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const handleClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenuIndex(index);
+  };
+
+  const onMenuClose = () => {
+    setAnchorEl(null);
+    setOpenMenuIndex(null);
+  };
 
   const {
     handleSubmit,
@@ -186,7 +207,10 @@ const BranchInfo = () => {
               </TableHead>
 
               <TableBody>
-                {data?.branchsummary.map((branch) => {
+                {data?.branchsummary.map((branch, index) => {
+                  const isMenuOpen = Boolean(
+                    anchorEl && openMenuIndex === index
+                  );
                   return (
                     <TableRow
                       key={branch.id}
@@ -196,23 +220,33 @@ const BranchInfo = () => {
                       <TableCell>{branch.branchName}</TableCell>
                       <TableCell>{branch.branchCode}</TableCell>
                       <TableCell>
-                        <Box sx={{ display: "flex", gap: "10px" }}>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            onClick={handleOpen}
-                          >
+                        <ExpandCircleDownIcon
+                          onClick={(event) => handleClick(event, index)}
+                        />
+                        <Menu
+                          keepMounted
+                          open={isMenuOpen}
+                          onClose={onMenuClose}
+                          anchorEl={anchorEl}
+                        >
+                          <MenuItem onClick={handleOpen}>
+                            <EditIcon />
                             Edit
-                          </Button>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            color={branchStatus ? "error" : "warning"}
-                            onClick={() => onConfirmDialogOpen()}
-                          >
-                            {branchStatus ? "Archive" : "Restore"}
-                          </Button>
-                        </Box>
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={() => onConfirmDialogOpen()}>
+                            {branchStatus ? (
+                              <>
+                                <ArchiveIcon /> Archive
+                              </>
+                            ) : (
+                              <>
+                                <UnarchiveIcon />
+                                Restore
+                              </>
+                            )}
+                          </MenuItem>
+                        </Menu>
                       </TableCell>
                     </TableRow>
                   );
@@ -333,16 +367,18 @@ const BranchInfo = () => {
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
-          {branchStatus ? "Archive Branch?" : "Restore Branch?"}
+          {branchStatus ? "Archive Branch" : "Restore Branch"}
         </DialogTitle>
         <DialogContent>
           {branchStatus ? (
             <DialogContentText>
-              Are you sure you want to archive this branch?
+              Are you sure you want to archive{" "}
+              {selectedBranchRow ? selectedBranchRow.branchName : null}?
             </DialogContentText>
           ) : (
             <DialogContentText>
-              Are you sure you want to restore this branch?
+              Are you sure you want to restore{" "}
+              {selectedBranchRow ? selectedBranchRow.branchName : null}?
             </DialogContentText>
           )}
         </DialogContent>

@@ -4,7 +4,10 @@ import {
   Button,
   Checkbox,
   CircularProgress,
+  Divider,
   FormControlLabel,
+  Menu,
+  MenuItem,
   Modal,
   Table,
   TableBody,
@@ -39,6 +42,10 @@ import {
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
 import { navigationData } from "../routes/NavigationData";
+import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
+import EditIcon from "@mui/icons-material/Edit";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import UnarchiveIcon from "@mui/icons-material/Unarchive";
 
 export const RoleInfo = () => {
   // const [roleInfo, setRoleInfo] = useState([]);
@@ -112,6 +119,18 @@ export const RoleInfo = () => {
   //   getAllRoles();
   // }, []);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const handleClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    setOpenMenuIndex(index);
+  };
+
+  const onMenuClose = () => {
+    setAnchorEl(null);
+    setOpenMenuIndex(null);
+  };
+
   const {
     handleSubmit,
     reset,
@@ -143,6 +162,7 @@ export const RoleInfo = () => {
       dispatch(setSnackbarSeverity("success"));
       dispatch(setSnackbarMessage("Role Updated Successfully!"));
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err);
       dispatch(setSnackbarSeverity("error"));
@@ -163,6 +183,7 @@ export const RoleInfo = () => {
         )
       );
       onSnackbarOpen();
+      onMenuClose();
     } catch (err) {
       console.log(err, "error");
       dispatch(setSnackbarSeverity("error"));
@@ -235,6 +256,9 @@ export const RoleInfo = () => {
 
               <TableBody>
                 {data?.rolesummary.map((role, index) => {
+                  const isMenuOpen = Boolean(
+                    anchorEl && openMenuIndex === index
+                  );
                   return (
                     <TableRow
                       key={index}
@@ -246,7 +270,7 @@ export const RoleInfo = () => {
                         <span>{role.permission + " "}</span>
                       </TableCell>
                       <TableCell>
-                        <Box sx={{ display: "flex", gap: "10px" }}>
+                        {/* <Box sx={{ display: "flex", gap: "10px" }}>
                           <Button
                             variant="contained"
                             size="small"
@@ -262,7 +286,35 @@ export const RoleInfo = () => {
                           >
                             {roleStatus ? "Archive" : "Restore"}
                           </Button>
-                        </Box>
+                        </Box> */}
+
+                        <ExpandCircleDownIcon
+                          onClick={(event) => handleClick(event, index)}
+                        />
+                        <Menu
+                          keepMounted
+                          open={isMenuOpen}
+                          onClose={onMenuClose}
+                          anchorEl={anchorEl}
+                        >
+                          <MenuItem onClick={handleOpen}>
+                            <EditIcon />
+                            Edit
+                          </MenuItem>
+                          <Divider />
+                          <MenuItem onClick={() => onConfirmDialogOpen()}>
+                            {roleStatus ? (
+                              <>
+                                <ArchiveIcon /> Archive
+                              </>
+                            ) : (
+                              <>
+                                <UnarchiveIcon />
+                                Restore
+                              </>
+                            )}
+                          </MenuItem>
+                        </Menu>
                       </TableCell>
                     </TableRow>
                   );
@@ -406,16 +458,18 @@ export const RoleInfo = () => {
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
-          {roleStatus ? "Archive Role?" : "Restore Role?"}
+          {roleStatus ? "Archive Role" : "Restore Role"}
         </DialogTitle>
         <DialogContent>
           {roleStatus ? (
             <DialogContentText>
-              Are you sure you want to archive this role?
+              Are you sure you want to archive{" "}
+              {selectedRoleRow ? selectedRoleRow.roleName : null}?
             </DialogContentText>
           ) : (
             <DialogContentText>
-              Are you sure you want to restore this role?
+              Are you sure you want to restore{" "}
+              {selectedRoleRow ? selectedRoleRow.roleName : null}?
             </DialogContentText>
           )}
         </DialogContent>
