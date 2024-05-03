@@ -8,8 +8,7 @@ import useDisclosure from "../hooks/useDisclosure";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -52,13 +51,11 @@ const CategoryForm = () => {
       await addCategory(data).unwrap();
       reset();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Category Added Successfully!"));
+      dispatch(setSnackbar({ message: "Category Added Successfully!" }));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

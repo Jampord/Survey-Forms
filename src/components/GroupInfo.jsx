@@ -38,8 +38,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import useDisclosure from "../hooks/useDisclosure";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
 import EditIcon from "@mui/icons-material/Edit";
@@ -138,14 +137,12 @@ const GroupInfo = () => {
       }).unwrap();
       reset();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Group Updated Successfully!"));
+      dispatch(setSnackbar({ message: "Group Updated Successfully!" }));
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };
@@ -154,20 +151,18 @@ const GroupInfo = () => {
     try {
       await archiveGroup({ Id: selectedGroupRow?.id });
       onConfirmDialogClose();
-      dispatch(setSnackbarSeverity("success"));
       dispatch(
-        setSnackbarMessage(
-          groupStatus
+        setSnackbar({
+          message: groupStatus
             ? "Group Archived Successfully!"
-            : "Group Restored Successfully!"
-        )
+            : "Group Restored Successfully!",
+        })
       );
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };
@@ -185,8 +180,6 @@ const GroupInfo = () => {
     display: "flex",
     flexDirection: "column",
   };
-
-  console.log(selectedGroupRow);
 
   useEffect(() => {
     if (open) {

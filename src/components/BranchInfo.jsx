@@ -35,10 +35,7 @@ import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import useDisclosure from "../hooks/useDisclosure";
-import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
-} from "../redux/reducers/snackbarSlice";
+import { setSnackbar } from "../redux/reducers/snackbarSlice";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
 import EditIcon from "@mui/icons-material/Edit";
 import ArchiveIcon from "@mui/icons-material/Archive";
@@ -91,14 +88,12 @@ const BranchInfo = () => {
       }).unwrap();
       reset();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Branch Updated Successfully!"));
+      dispatch(setSnackbar({ message: "Branch Updated Successfully!" }));
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };
@@ -107,20 +102,18 @@ const BranchInfo = () => {
     try {
       await archiveBranch({ Id: selectedBranchRow?.id }).unwrap();
       onConfirmDialogClose();
-      dispatch(setSnackbarSeverity("success"));
       dispatch(
-        setSnackbarMessage(
-          branchStatus
+        setSnackbar({
+          message: branchStatus
             ? "Branch Archived Successfully!"
-            : "Branch Restored Successfully!"
-        )
+            : "Branch Restored Successfully!",
+        })
       );
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

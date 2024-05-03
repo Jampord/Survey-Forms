@@ -38,8 +38,7 @@ import { rolesYup } from "../schema/Schema";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import useDisclosure from "../hooks/useDisclosure";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 import { navigationData } from "../routes/NavigationData";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
@@ -159,14 +158,12 @@ export const RoleInfo = () => {
       updateRole({ Id: selectedRoleRow?.id, body: transformData }).unwrap();
       reset();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Role Updated Successfully!"));
+      dispatch(setSnackbar({ message: "Role Updated Successfully!" }));
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };
@@ -174,20 +171,18 @@ export const RoleInfo = () => {
   const onConfirm = async () => {
     try {
       await archiveRole({ Id: selectedRoleRow?.id }).unwrap();
-      dispatch(setSnackbarSeverity("success"));
       dispatch(
-        setSnackbarMessage(
+        setSnackbar({message: 
           roleStatus
             ? "Role Archived Successfully!"
-            : "Role Restored Successfully!"
+            : "Role Restored Successfully!"}
         )
       );
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err, "error");
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
     onConfirmDialogClose();

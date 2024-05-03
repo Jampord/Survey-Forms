@@ -170,5 +170,5 @@ export const groupSurveyYup = {
   schema: yup.object({
     groupsId: yup.object().required("Please choose group."),
   }),
-  defaultValues: { groupsId: "" },
+  defaultValues: { groupsId: null, score: null },
 };

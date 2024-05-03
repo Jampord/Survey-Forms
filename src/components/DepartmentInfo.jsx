@@ -36,8 +36,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { departmentsYup } from "../schema/Schema";
 import useDisclosure from "../hooks/useDisclosure";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 import { useGetAllDummyUsersQuery } from "../redux/api/dummyDepartmentAPI";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
@@ -98,8 +97,6 @@ export const DepartmentInfo = () => {
   });
   const [archiveDepartment] = useArchiveDepartmentMutation();
   const [updateDepartment] = useUpdateDepartmentMutation();
-  const { data: dummyUsers } = useGetAllDummyUsersQuery();
-  console.log(dummyUsers);
   //end of dept api
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -138,14 +135,12 @@ export const DepartmentInfo = () => {
       }).unwrap();
       reset();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Department Updated Successfully!"));
+      dispatch(setSnackbar({ message: "Department Updated Successfully!" }));
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };
@@ -153,20 +148,18 @@ export const DepartmentInfo = () => {
   const onConfirm = async () => {
     try {
       await archiveDepartment({ Id: selectedDepartmentRow?.id }).unwrap();
-      dispatch(setSnackbarSeverity("success"));
       dispatch(
-        setSnackbarMessage(
+        setSnackbar({message:
           departmentStatus
             ? "Department Archived Successfully!"
-            : "Department Restored Successfully!"
+            : "Department Restored Successfully!"}
         )
       );
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
     onConfirmDialogClose();

@@ -16,8 +16,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import useDisclosure from "../hooks/useDisclosure";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { navigationData } from "../routes/NavigationData";
@@ -79,14 +78,12 @@ export default function UserForm() {
       // handleClose();
 
       await addRole(transformData).unwrap();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("User Updated Successfully!"));
+      dispatch(setSnackbar({message:"User Updated Successfully!"}));
       onSnackbarOpen();
       handleClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

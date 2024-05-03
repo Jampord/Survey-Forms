@@ -56,10 +56,10 @@ const userAPI = api
       }),
 
       changePassword: builder.mutation({
-        query: ({ Id }) => ({
-          url: `User/UpdatePassword/{Id}`,
+        query: ({ body, Id }) => ({
+          url: `User/UpdatePassword/${Id}`,
           method: "PUT",
-          body: Id,
+          body,
         }),
         invalidatesTags: ["user"],
       }),

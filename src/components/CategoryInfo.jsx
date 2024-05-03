@@ -35,10 +35,7 @@ import { categoriesYup } from "../schema/Schema";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import useDisclosure from "../hooks/useDisclosure";
-import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
-} from "../redux/reducers/snackbarSlice";
+import { setSnackbar } from "../redux/reducers/snackbarSlice";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -105,14 +102,12 @@ const CategoryInfo = () => {
       }).unwrap();
       reset();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Category Updated Successfully!"));
+      dispatch(setSnackbar({ message: "Category Updated Successfully!" }));
       onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
       onMenuClose();
     }
@@ -122,13 +117,11 @@ const CategoryInfo = () => {
     try {
       await deleteCategory({ Id: selectedCategoryRow?.id });
       onConfirmDialogClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Category Deleted Successfully!"));
+      dispatch(setSnackbar({ message: "Category Deleted Successfully!" }));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

@@ -55,9 +55,9 @@ export default function HomePage() {
           </div>
         </div>
 
-        <Modal open={isModalOpen} onClose={onModalClose} keepMounted={true}>
+        <Modal open={isModalOpen} onClose={onModalClose}>
           <Box sx={style}>
-            <GradingForm />
+            <GradingForm onClose={onModalClose} />
           </Box>
         </Modal>
       </Sidebar>

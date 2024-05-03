@@ -24,8 +24,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 import {
   useArchiveUserMutation,
   useGetAllRolesQuery,
@@ -40,17 +38,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedRow } from "../redux/reducers/selectedRowSlice";
 import { useGetAllDepartmentsQuery } from "../redux/api/departmentAPI";
 import useDisclosure from "../hooks/useDisclosure";
-import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
-} from "../redux/reducers/snackbarSlice";
+import { setSnackbar } from "../redux/reducers/snackbarSlice";
 import { useGetAllGroupsQuery } from "../redux/api/groupAPI";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
 import EditIcon from "@mui/icons-material/Edit";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import KeyIcon from "@mui/icons-material/Key";
-import PasswordIcon from "@mui/icons-material/Password";
 
 export default function UserInfo() {
   const [open, setOpen] = useState(false);
@@ -59,12 +53,7 @@ export default function UserInfo() {
   const selectedUserRow = useSelector((state) => state.selectedRow.selectedRow);
   const dispatch = useDispatch();
   const snackbarMessage = useSelector((state) => state.snackbar.message);
-  const snackbarSeverity = useSelector((state) => state.snackbar.severity);
-  const {
-    isOpen: isSnackbarOpen,
-    onOpen: onSnackbarOpen,
-    onClose: onSnackbarClose,
-  } = useDisclosure();
+
   const {
     isOpen: isConfirmDialogOpen,
     onOpen: onConfirmDialogOpen,
@@ -139,37 +128,45 @@ export default function UserInfo() {
       }).unwrap();
       reset();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("User Updated Successfully!"));
-      onSnackbarOpen();
+      // dispatch(setSnackbarSeverity("success));
+      dispatch(
+        setSnackbar({
+          message: "User updated successfully!",
+          severity: "success",
+        })
+      );
+      // onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
-      onSnackbarOpen();
+      // dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
+      // onSnackbarOpen();
     }
   };
+
+  console.log("snackbar message", !!snackbarMessage);
 
   const onConfirm = async () => {
     try {
       await archiveUser({ Id: selectedUserRow?.id });
       onConfirmDialogClose();
-      dispatch(setSnackbarSeverity("success"));
+      // dispatch(setSnackbarSeverity("success"));
       dispatch(
-        setSnackbarMessage(
-          userStatus
+        setSnackbar({
+          message: userStatus
             ? "User Archived Successfully!"
-            : "User Restored Successfully!"
-        )
+            : "User Restored Successfully!",
+          severity: "success",
+        })
       );
-      onSnackbarOpen();
+      // onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
-      onSnackbarOpen();
+      // dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbar(err.data));
+      // onSnackbarOpen();
     }
   };
 
@@ -177,15 +174,15 @@ export default function UserInfo() {
     try {
       await resetPassword({ Id: selectedUserRow?.id });
       onResetPasswordDialogClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Password was reset!"));
-      onSnackbarOpen();
+      // dispatch(setSnackbarSeverity("success"));
+      dispatch(setSnackbar({ message: "Password was reset!" }));
+      // onSnackbarOpen();
       onMenuClose();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
-      onSnackbarOpen();
+      // dispatch(setSnackbarSeverity("error"));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
+      // onSnackbarOpen();
     }
   };
 
@@ -406,12 +403,12 @@ export default function UserInfo() {
               defaultValue={usersEditYup.defaultValues}
               render={({ field }) =>
                 !errors.userName ? (
-                  <TextField {...field} label="User Name" variant="filled" />
+                  <TextField {...field} label="Username" variant="filled" />
                 ) : (
                   <TextField
                     {...field}
                     error
-                    label="User Name"
+                    label="Username"
                     variant="filled"
                     helperText={errors.userName.message}
                   />
@@ -582,7 +579,7 @@ export default function UserInfo() {
         </Box>
       </Modal>
 
-      <Snackbar
+      {/* <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={isSnackbarOpen}
         autoHideDuration={3000}
@@ -596,7 +593,7 @@ export default function UserInfo() {
         >
           {snackbarMessage}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
 
       <Dialog open={isConfirmDialogOpen} onClose={onConfirmDialogClose}>
         <DialogTitle>
