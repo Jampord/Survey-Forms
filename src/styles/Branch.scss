@@ -1,13 +1,24 @@
 .branch {
-  padding: 10px;
+  padding: 10px 20px;
   background-color: #eeeeee;
   border-radius: 5px;
   // box-shadow: 0 0 2px 0.3px;
   margin-bottom: 10px;
 
-  &__userAccountInput {
-    padding-inline: 10px;
-    margin-left: 20px;
-    width: 200px;
+  .branch1 {
+    display: flex;
+    flex-wrap: wrap;
   }
-}
+   
+  .branch2 {
+    display: flex;
+    justify-content: end;
+    flex-grow: 1;
+  }
+
+  label {
+    text-align: center;
+    margin-top: 8px;
+    margin-right: 20px;
+  }
+  }

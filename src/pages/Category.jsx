@@ -21,15 +21,19 @@ const Category = () => {
         {/* <NavBar /> */}
         <Box className="category">
           <h1>Category</h1>
-          <CategoryForm />
-          <TextField
-            size="small"
-            type="search"
-            id="searchBar"
-            placeholder="Search..."
-            className="userAccountInput"
-            onChange={(e) => dispatch(setCategorySearch(e.target.value))}
-          />
+          <div className="category1">
+            <CategoryForm />
+            <div className="category2">
+              <TextField
+                size="small"
+                type="search"
+                id="searchBar"
+                placeholder="Search..."
+                className="userAccountInput"
+                onChange={(e) => dispatch(setCategorySearch(e.target.value))}
+              />
+            </div>
+          </div>
         </Box>
         <CategoryInfo />
       </Sidebar>

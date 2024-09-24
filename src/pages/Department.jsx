@@ -20,7 +20,9 @@ export default function Department() {
       {/* <NavBar /> */}
       <Box className="department">
         <h1>Department</h1>
+        <div className="department1">
         <DepartmentForm />
+        <div className="department2">
         <Checkbox
           id="archiveCheckbox"
           onChange={(e) => dispatch(setDepartmentStatus(!status))}
@@ -35,6 +37,8 @@ export default function Department() {
           className="userAccountInput"
           onChange={(e) => dispatch(setDepartmentSearch(e.target.value))}
         />
+        </div>
+        </div>
       </Box>
       <DepartmentInfo />
       </Sidebar>

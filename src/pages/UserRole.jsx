@@ -17,24 +17,28 @@ export default function UserRole() {
       <Sidebar>
         {/* <NavBar /> */}
         <Box className="userRole">
-          <h1 className="userHeader">User Role</h1>
-          <RoleForm />
-          <Checkbox
-            id="archiveCheckbox"
-            onChange={(e) => dispatch(setRoleStatus(!status))}
-            value={status}
-          />
-          <label htmlFor="archiveCheckbox" className="userAccountInput">
-            Archived
-          </label>
-          <TextField
-            size="small"
-            type="search"
-            id="searchBar"
-            placeholder="Search..."
-            className="userAccountInput"
-            onChange={(e) => dispatch(setRoleSearch(e.target.value))}
-          />
+          <h1>User Role</h1>
+          <div className="userRole1">
+            <RoleForm />
+            <div className="userRole2">
+              <Checkbox
+                id="archiveCheckbox"
+                onChange={(e) => dispatch(setRoleStatus(!status))}
+                value={status}
+              />
+              <label htmlFor="archiveCheckbox" className="userAccountInput">
+                Archived
+              </label>
+              <TextField
+                size="small"
+                type="search"
+                id="searchBar"
+                placeholder="Search..."
+                className="userAccountInput"
+                onChange={(e) => dispatch(setRoleSearch(e.target.value))}
+              />
+            </div>
+          </div>
         </Box>
         <RoleInfo />
       </Sidebar>

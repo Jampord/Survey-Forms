@@ -41,7 +41,6 @@ export default function UserForm() {
     reset,
     watch,
     control,
-
     formState: { errors },
   } = useForm({
     resolver: yupResolver(usersYup.schema),
@@ -124,7 +123,7 @@ export default function UserForm() {
   // console.log(watch())
 
   return (
-    <>
+    <div>
       <Button
         id="addButton"
         variant="contained"
@@ -139,6 +138,7 @@ export default function UserForm() {
             Add User Form
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
+          <Box sx={{columnGap: 10}}>
             <Controller
               name="fullName"
               control={control}
@@ -310,6 +310,7 @@ export default function UserForm() {
               }}
             />
 
+            </Box>
             {/* <FormControl variant="standard" sx={{ minWidth: 183 }}>
               <InputLabel>Role</InputLabel>
               <Select
@@ -368,7 +369,7 @@ export default function UserForm() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </>
+    </div>
   );
 }
 

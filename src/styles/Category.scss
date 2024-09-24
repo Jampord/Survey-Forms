@@ -1,13 +1,18 @@
 .category {
-  padding: 10px;
+  padding: 10px 20px;
   background-color: #eeeeee;
   border-radius: 5px;
-  // box-shadow: 0 0 2px 0.3px;
   margin-bottom: 10px;
 
-  &__userAccountInput {
-    padding-inline: 10px;
-    margin-left: 20px;
-    width: 200px;
+  .category1 {
+    display: flex;
+    flex-wrap: wrap; 
   }
+
+  .category2 {
+    display: flex;
+    justify-content: end;
+    flex-grow: 1;
+  }
+
 }

@@ -93,7 +93,7 @@ const GroupForm = () => {
         id="addButton"
         variant="contained"
         onClick={onOpen}
-        sx={{ height: "25px", marginBottom: "5px" }}
+        size="small"
       >
         Add
       </Button>

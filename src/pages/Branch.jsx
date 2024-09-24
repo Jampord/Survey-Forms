@@ -21,21 +21,25 @@ const Branch = () => {
         {/* <NavBar /> */}
         <Box className="branch">
           <h1>Branch</h1>
-          <BranchForm />
+          <div className="branch1">
+          <BranchForm class="branchForm"/>
+          <div className="branch2">
           <Checkbox
             id="archiveCheckbox"
             onChange={(e) => dispatch(setBranchStatus(!status))}
             value={status}
           />
-          <label htmlFor="archiveCheckbox">Archived</label>
+          <label for="archiveCheckbox">Archived</label>
           <TextField
             size="small"
             type="search"
             id="searchBar"
             placeholder="Search..."
-            className="userAccountInput"
+            class="userAccountInput"
             onChange={(e) => dispatch(setBranchSearch(e.target.value))}
           />
+          </div>
+          </div>
         </Box>
         <BranchInfo />
       </Sidebar>

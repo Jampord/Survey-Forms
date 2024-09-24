@@ -76,7 +76,7 @@ export default function DepartmentForm() {
   };
 
   return (
-    <>
+    <div>
       <Button
         id="addButton"
         variant="contained"
@@ -182,6 +182,6 @@ export default function DepartmentForm() {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-    </>
+    </div>
   );
 }

@@ -15,26 +15,30 @@ export default function UserAccount() {
   return (
     <>
       <Sidebar>
-        {/* <NavBar /> */}
+        {/* <NavBar />   */}
         <Box className="userAccount">
           <h1>User Account</h1>
-          <UserForm />
-          <Checkbox
-            id="archiveCheckbox"
-            onChange={(e) => dispatch(setUserStatus(!status))}
-            value={status}
-          />
-          <label htmlFor="archiveCheckbox" className="userAccountInput">
-            Archived
-          </label>
-          <TextField
-            size="small"
-            type="search"
-            id="searchBar"
-            placeholder="Search..."
-            className="userAccountInput"
-            onChange={(e) => dispatch(setUserSearch(e.target.value))}
-          />
+          <div className="userAccount1">
+            <UserForm />
+            <div className="userAccount2">
+              <Checkbox
+                id="archiveCheckbox"
+                onChange={(e) => dispatch(setUserStatus(!status))}
+                value={status}
+              />
+              <label htmlFor="archiveCheckbox" className="userAccountInput">
+                Archived
+              </label>
+              <TextField
+                size="small"
+                type="search"
+                id="searchBar"
+                placeholder="Search..."
+                className="userAccountInput"
+                onChange={(e) => dispatch(setUserSearch(e.target.value))}
+              />
+            </div>
+          </div>
         </Box>
         <UserInfo />
       </Sidebar>
