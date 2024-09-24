@@ -21,7 +21,6 @@ import CurrentDate from "./CurrentDate";
 import { useDispatch, useSelector } from "react-redux";
 import { navigationData } from "../routes/NavigationData";
 import { NavLink, useNavigate } from "react-router-dom";
-import Logout from "./Logout";
 import { useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import {
@@ -34,17 +33,19 @@ import {
   Menu,
   MenuItem,
   Modal,
+  TextField,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PasswordIcon from "@mui/icons-material/Password";
 import { clearToken } from "../features/auth/authSlice";
 import useDisclosure from "../hooks/useDisclosure";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { changePasswordYup } from "../schema/Schema";
 import { useChangePasswordMutation } from "../redux/api/userAPI";
 import { setSidebarToggle } from "../redux/reducers/sidebarSlice";
+import { setSnackbar } from "../redux/reducers/snackbarSlice";
 
 const drawerWidth = 240;
 
@@ -182,6 +183,7 @@ export default function Sidebar({ children }) {
   const {
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
     control,
   } = useForm({
@@ -190,11 +192,17 @@ export default function Sidebar({ children }) {
     defaultValues: changePasswordYup.defaultValues,
   });
 
+  const id = localStorage.getItem("id");
+
   const onSubmit = async (data) => {
     try {
-      await changePassword;
+      await changePassword({ Id: id, body: data }).unwrap();
+      dispatch(setSnackbar({ message: "Changed password successfully!" }));
+      onChangePasswordModalClose();
     } catch (err) {
       console.log(err);
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
+      onChangePasswordModalClose();
     }
   };
 
@@ -203,14 +211,18 @@ export default function Sidebar({ children }) {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: 350,
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
     p: 4,
     display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     flexDirection: "column",
   };
+
+  const updatePass = localStorage.getItem("updatePass");
 
   return (
     <>
@@ -255,7 +267,7 @@ export default function Sidebar({ children }) {
                 onClose={onMenuClose}
                 anchorEl={anchorEl}
               >
-                <MenuItem>
+                <MenuItem onClick={onChangePasswordModalOpen}>
                   <PasswordIcon /> Change Password
                 </MenuItem>
                 <Divider />
@@ -334,12 +346,119 @@ export default function Sidebar({ children }) {
         </Box>
       </Box>
 
-      <Modal open={isChangePasswordModalOpen}>
+      <Modal
+        open={isChangePasswordModalOpen}
+        onClose={onChangePasswordModalClose}
+      >
         <Box sx={style}>
           <Typography variant="h6" component="h2">
             Change Password Form
           </Typography>
-          {/* <form onSubmit={handleSubmit(onSubmit)}></form> */}
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              render={({ field }) =>
+                !errors.fullName ? (
+                  <TextField
+                    {...field}
+                    label="Password"
+                    variant="outlined"
+                    fullWidth
+                    helperText="Input your current password."
+                  />
+                ) : (
+                  <TextField
+                    {...field}
+                    error
+                    label="Password"
+                    variant="outlined"
+                    helperText={errors.fullName.message}
+                    fullWidth
+                  />
+                )
+              }
+            />
+
+            <Controller
+              name="newPassword"
+              control={control}
+              defaultValue=""
+              render={({ field }) =>
+                !errors.fullName ? (
+                  <TextField
+                    {...field}
+                    label="New Password"
+                    variant="outlined"
+                    fullWidth
+                    helperText="Input your new password."
+                  />
+                ) : (
+                  <TextField
+                    {...field}
+                    error
+                    label="New Password"
+                    variant="outlined"
+                    helperText={errors.fullName.message}
+                    fullWidth
+                  />
+                )
+              }
+            />
+
+            <Controller
+              name="confirmPassword"
+              control={control}
+              defaultValue=""
+              render={({ field }) =>
+                !errors.fullName ? (
+                  <TextField
+                    {...field}
+                    label="Confirm Password"
+                    variant="outlined"
+                    fullWidth
+                    helperText="Confirm your current password."
+                  />
+                ) : (
+                  <TextField
+                    {...field}
+                    error
+                    label="Confirm Password"
+                    variant="outlined"
+                    helperText={errors.fullName.message}
+                    fullWidth
+                  />
+                )
+              }
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{
+                display: "inline-flex",
+                width: 80,
+                marginRight: 0,
+                fontSize: 12,
+              }}
+            >
+              Confirm
+            </Button>
+
+            <Button
+              onClick={onChangePasswordModalClose}
+              variant="outlined"
+              sx={{
+                display: "inline-flex",
+                width: 80,
+                fontSize: 12,
+              }}
+            >
+              No
+            </Button>
+          </form>
         </Box>
       </Modal>
 

@@ -17,8 +17,7 @@ import { useGetAllBranchesQuery } from "../redux/api/branchAPI";
 import { useSelector, useDispatch } from "react-redux";
 import useDisclosure from "../hooks/useDisclosure";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 
 const GroupForm = () => {
@@ -51,13 +50,11 @@ const GroupForm = () => {
     try {
       await addGroup(transformData).unwrap(); //unwrap is important
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Group Added Successfully!"));
+      dispatch(setSnackbar({ message: "Group Added Successfully!" }));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

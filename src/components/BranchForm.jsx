@@ -8,10 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import useDisclosure from "../hooks/useDisclosure";
-import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
-} from "../redux/reducers/snackbarSlice";
+import { setSnackbar } from "../redux/reducers/snackbarSlice";
 
 const BranchForm = () => {
   const [open, setOpen] = useState(false);
@@ -48,13 +45,11 @@ const BranchForm = () => {
     try {
       await addBranch(data).unwrap();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Branch Added Successfully!"));
+      dispatch(setSnackbar({ message: "Branch Added Successfully!" }));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

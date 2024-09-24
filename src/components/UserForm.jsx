@@ -17,8 +17,7 @@ import useDisclosure from "../hooks/useDisclosure";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 import { useGetAllGroupsQuery } from "../redux/api/groupAPI";
 
@@ -94,13 +93,11 @@ export default function UserForm() {
       //use unwrap to catch error on RTK
       await addUser(transformData).unwrap();
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("User Added Successfully!"));
+      dispatch(setSnackbar({message: "User Added Successfully!"}));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

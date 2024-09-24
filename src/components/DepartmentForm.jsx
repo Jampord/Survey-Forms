@@ -9,8 +9,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import useDisclosure from "../hooks/useDisclosure";
 import {
-  setSnackbarMessage,
-  setSnackbarSeverity,
+  setSnackbar,
 } from "../redux/reducers/snackbarSlice";
 
 export default function DepartmentForm() {
@@ -48,13 +47,11 @@ export default function DepartmentForm() {
     try {
       await addDepartment(data).unwrap(); //unwrap is important
       handleClose();
-      dispatch(setSnackbarSeverity("success"));
-      dispatch(setSnackbarMessage("Department Added Successfully!"));
+      dispatch(setSnackbar({message: "Department Added Successfully!"}));
       onSnackbarOpen();
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.data));
+      dispatch(setSnackbar({ message: err.data, severity: "error" }));
       onSnackbarOpen();
     }
   };

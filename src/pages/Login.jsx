@@ -17,10 +17,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import useDisclosure from "../hooks/useDisclosure";
 import {
-  setSnackbarMessage,
+  setSnackbar,
   setSnackbarSeverity,
 } from "../redux/reducers/snackbarSlice";
-import { setFullName, setToken } from "../features/auth/authSlice";
+import {
+  setChangePasswordModalPopup,
+  setFullName,
+  setToken,
+  setUserId,
+} from "../features/auth/authSlice";
 import { encryptToken } from "../features/tokenService";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { setPermissions } from "../redux/reducers/permissionsSlice";
@@ -59,13 +64,18 @@ export default function Login() {
       dispatch(setToken(encryptedToken));
       dispatch(setFullName(res?.fullName));
       dispatch(setPermissions(res?.permission));
+      dispatch(setUserId(res?.id));
+      dispatch(setChangePasswordModalPopup(res?.updatePass));
+      // dispatch(setUserId(res?.id));
+      console.log(res);
+
+      dispatch(setSnackbar({ message: "Logged in successfully!" }));
 
       reset();
       navigate("/");
     } catch (err) {
       console.log(err);
-      dispatch(setSnackbarSeverity("error"));
-      dispatch(setSnackbarMessage(err.message));
+      dispatch(setSnackbar({ message: err.message, severity: "error" }));
       onSnackbarOpen();
     }
   };
@@ -148,22 +158,6 @@ export default function Login() {
           </form>
         </div>
       </div>
-
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        open={isSnackbarOpen}
-        autoHideDuration={4000}
-        onClose={onSnackbarClose}
-      >
-        <Alert
-          onClose={onSnackbarClose}
-          severity={snackbarSeverity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </>
   );
 }
